@@ -4,7 +4,21 @@
     :size="size"
     :loading="loading"
     :disabled="disabled"
+    :color="buttonColor"
+    :text-color="textColor"
     :class="buttonClass"
+    :round="round"
+    :circle="circle"
+    :ghost="ghost"
+    :secondary="secondary"
+    :tertiary="tertiary"
+    :quaternary="quaternary"
+    :strong="strong"
+    :bordered="bordered"
+    :dashed="dashed"
+    :focusable="focusable"
+    :keyboard="keyboard"
+    :block="block"
     @click="handleClick"
   >
     <template #icon v-if="icon">
@@ -26,6 +40,21 @@ interface Props {
   disabled?: boolean;
   icon?: Component;
   variant?: "solid" | "outline" | "ghost";
+  // Naive UI specific props
+  color?: string;
+  textColor?: string;
+  round?: boolean;
+  circle?: boolean;
+  ghost?: boolean;
+  secondary?: boolean;
+  tertiary?: boolean;
+  quaternary?: boolean;
+  strong?: boolean;
+  bordered?: boolean;
+  dashed?: boolean;
+  focusable?: boolean;
+  keyboard?: boolean;
+  block?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -34,22 +63,61 @@ const props = withDefaults(defineProps<Props>(), {
   loading: false,
   disabled: false,
   variant: "solid",
+  round: false,
+  circle: false,
+  ghost: false,
+  secondary: false,
+  tertiary: false,
+  quaternary: false,
+  strong: false,
+  bordered: true,
+  dashed: false,
+  focusable: true,
+  keyboard: true,
+  block: false,
 });
 
 const emit = defineEmits<{
   click: [event: MouseEvent];
 }>();
 
+const buttonColor = computed(() => {
+  if (props.color) return props.color;
+
+  // Custom primary color using Naive UI color prop
+  if (props.type === "primary") {
+    return "#0b557f";
+  }
+
+  return undefined;
+});
+
+const textColor = computed(() => {
+  if (props.textColor) return props.textColor;
+
+  // Ensure white text for primary buttons
+  if (props.type === "primary") {
+    return "white";
+  }
+
+  return undefined;
+});
+
 const buttonClass = computed(() => {
   const classes = [];
 
-  // Custom primary button styling with Figma specifications
+  // Primary button styling using Tailwind
   if (props.type === "primary") {
-    classes.push("custom-primary-button");
+    classes.push(
+      "!w-[163px] !h-[35px] !rounded-lg !font-medium",
+      "!px-[14px] !py-[10px]",
+      "active:!bg-[#083f5f] active:!transform-none",
+      "disabled:!bg-gray-500 disabled:!cursor-not-allowed"
+    );
   } else if (props.variant === "outline") {
-    classes.push("border-2");
+    classes.push("!border-2");
   } else if (props.variant === "ghost") {
-    classes.push("bg-transparent hover:bg-gray-100");
+    classes.push("!bg-transparent hover:!bg-gray-100");
   }
 
   return classes.join(" ");
@@ -61,30 +129,3 @@ function handleClick(event: MouseEvent) {
   }
 }
 </script>
-
-<style scoped>
-.custom-primary-button {
-  background-color: #0b557f !important;
-  width: 163px;
-  height: 41px;
-  gap: 6px;
-  opacity: 1;
-  padding: 10px 16px 10px 14px;
-  border-radius: 8px;
-  border: none;
-  color: white;
-  font-weight: 500;
-}
-
-.custom-primary-button:active {
-  background-color: #083f5f !important;
-  transform: translateY(0);
-}
-
-.custom-primary-button:disabled {
-  background-color: #6b7280 !important;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-</style>

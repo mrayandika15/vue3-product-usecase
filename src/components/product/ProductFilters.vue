@@ -1,5 +1,5 @@
 <template>
-  <div class="py-4">
+  <div>
     <div class="flex items-center justify-between gap-4">
       <!-- Left side - Navigation tabs -->
       <div class="flex-1">
@@ -68,15 +68,6 @@ const tampilkanOptions = computed(() => [
   { label: "25", value: 25 },
   { label: "50", value: 50 },
   { label: "100", value: 100 },
-]);
-
-// Category options for filter (keeping for reference, but not used anymore)
-const categoryOptions = computed(() => [
-  { label: "Semua Kategori", value: "" },
-  ...productStore.categories.map((category) => ({
-    label: category,
-    value: category,
-  })),
 ]);
 
 // Watch for changes and update store

@@ -1,47 +1,24 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+<script setup lang="ts">
+import { ref } from 'vue'
+import { NButton, NCard, NH1 } from 'naive-ui'
+
+const message = ref<string>('Vue 3 + TypeScript + Pinia + Naive UI + Tailwind CSS')
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
+  <main class="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <NCard class="max-w-md w-full">
+      <NH1 class="text-center mb-4">{{ message }}</NH1>
+      <div class="text-center">
+        <NButton type="primary" class="mr-2">
+          Naive UI Button
+        </NButton>
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Tailwind Button
+        </button>
+      </div>
+    </NCard>
   </main>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
-</style>
+<style scoped></style>

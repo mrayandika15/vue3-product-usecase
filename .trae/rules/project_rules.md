@@ -3,3 +3,28 @@
 3. dont use any context that is not related to the project
 4. make sure to not using type any in the project
 5. dont start local development server unless i inform you ok !
+
+please assumed you have seperation of concern of folder directory. use this directory approach to has good folder management :
+
+├─ api/
+│ ├─ index.js
+│ ├─ product.js
+│ └─ category.js
+├─ composables/
+│ └─ useDateTime.js
+├─ constants/
+│ └─ constants.js
+├─ layouts/
+├─ router/
+│ └─ index.js
+├─ services/
+│ └─ productService.js
+├─ store/
+│ └─ productStore.js
+├─ views/
+├─ components/
+├─ .env.local
+├─ .env.staging
+├─ .env.production
+└─ main.js
+└─ App.vue

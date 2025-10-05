@@ -1,7 +1,5 @@
 // Utility functions for formatting and data manipulation
 
-import { Product } from "@/types/product";
-
 // Format price to Indonesian Rupiah
 export function formatPrice(price: number): string {
   return new Intl.NumberFormat("id-ID", {

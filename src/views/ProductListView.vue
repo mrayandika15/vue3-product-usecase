@@ -43,12 +43,10 @@ import { NCard } from "naive-ui";
 const productStore = useProductStore();
 
 onMounted(async () => {
-  // Load products using the new service
   await productStore.loadProducts();
 });
 
 function handleAddProduct() {
-  // TODO: Implement add product modal/form
   console.log("Add product clicked");
 }
 
@@ -58,11 +56,9 @@ function handlePageChange(page: number) {
 
 function handleRowSelect(id: number, checked: boolean) {
   console.log(`Product ${id} selected: ${checked}`);
-  // TODO: Implement row selection logic
 }
 
 function handleToggleStatus(id: number, status: boolean) {
   console.log(`Product ${id} status changed to: ${status}`);
-  // TODO: Implement status toggle logic
 }
 </script>

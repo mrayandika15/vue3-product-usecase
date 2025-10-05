@@ -1,61 +1,99 @@
-import PRODUCT_LIST_DUMMY from "@/data/DUMMY_PRODUCT";
-import type { ProductListResponse } from "@/types/product";
+import apiService from "@/services/apiService";
+import type {
+  ApiResponse,
+  ListPaginatedResponse,
+  ProductListRequest,
+} from "@/types/api";
+import type { Product } from "@/types/product";
 
-// Dummy data service that simulates API responses
 export class ProductService {
-  private static dummyData: ProductListResponse = PRODUCT_LIST_DUMMY;
-
-  // Simulate API call with delay
+  // Get products using POST request as specified
   static async getProducts(
     page: number = 1,
-    perPage: number = 10
-  ): Promise<ProductListResponse> {
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    perPage: number = 10,
+    search?: string,
+    sortBy?: string,
+    sortOrder?: "asc" | "desc"
+  ): Promise<ApiResponse<ListPaginatedResponse<Product>>> {
+    try {
+      const requestData: ProductListRequest = {
+        page,
+        per_page: perPage,
+        search,
+        sort_by: sortBy,
+        sort_order: sortOrder,
+        tampilkan: perPage,
+      };
 
-    // Return paginated data
-    const startIndex = (page - 1) * perPage;
-    const endIndex = startIndex + perPage;
-    const paginatedData = this.dummyData.data.data.slice(startIndex, endIndex);
+      // Using POST request to /product/item/list endpoint
+      const response = await apiService.post<ListPaginatedResponse<Product>>(
+        "/product/item/list",
+        requestData
+      );
 
-    function transformToTreeData(products: any[]): any[] {
-      return products.map((product) => {
-        // If product has variants, add them as children
-        if (
-          product.has_variant &&
-          product.variant &&
-          product.variant.length > 0
-        ) {
-          return {
-            ...product,
-            children: product.variant.map((variant: any) => ({
-              ...variant,
-              // Mark as variant for styling purposes
-              isVariant: true,
-              // Use parent's category if variant doesn't have one
-              category: variant.category || product.category,
-              // Inherit parent's updated_at if variant doesn't have one
-              updated_at: variant.updated_at || product.updated_at,
-            })),
-          };
-        }
-        return product;
-      });
+      const transformedData: ApiResponse<ListPaginatedResponse<Product>> = {
+        ...response,
+        data: {
+          ...response.data,
+          data: this.transformToTreeData(response.data.data),
+        },
+      };
+
+      return transformedData;
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      throw error;
+    }
+  }
+
+  // Transform products to tree structure for variants
+  private static transformToTreeData(products: Product[]): Product[] {
+    // Add safety check for products array
+    if (!Array.isArray(products) || products.length === 0) {
+      return [];
     }
 
-    const treeData = transformToTreeData(paginatedData);
+    return products.map((product) => {
+      // If product has variants, add them as children
+      if (
+        product.has_variant &&
+        product.variant &&
+        Array.isArray(product.variant) &&
+        product.variant.length > 0
+      ) {
+        return {
+          ...product,
+          children: product.variant.map((variant: unknown) => {
+            const variantProduct = variant as Product;
+            return {
+              ...variantProduct,
+              isVariant: true,
+              category: variantProduct.category || product.category,
+              updated_at: variantProduct.updated_at || product.updated_at,
+            };
+          }),
+        };
+      }
+      return product;
+    });
+  }
 
-    return {
-      ...this.dummyData,
-      data: {
-        ...this.dummyData.data,
-        current_page: page,
-        data: treeData,
-        from: startIndex + 1,
-        to: Math.min(endIndex, this.dummyData.data.data.length),
-        per_page: perPage,
-        last_page: Math.ceil(this.dummyData.data.data.length / perPage),
-      },
-    };
+  // Additional method for searching products
+  static async searchProducts(
+    searchTerm: string,
+    page: number = 1,
+    perPage: number = 10
+  ): Promise<ApiResponse<ListPaginatedResponse<Product>>> {
+    return this.getProducts(page, perPage, searchTerm);
+  }
+
+  // Method for getting products with specific sorting
+  static async getProductsSorted(
+    sortBy: string,
+    sortOrder: "asc" | "desc" = "asc",
+    page: number = 1,
+    perPage: number = 10
+  ): Promise<ApiResponse<ListPaginatedResponse<Product>>> {
+    return this.getProducts(page, perPage, undefined, sortBy, sortOrder);
   }
 }

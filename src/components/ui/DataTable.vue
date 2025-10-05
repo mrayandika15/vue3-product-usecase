@@ -90,6 +90,8 @@ const emit = defineEmits<{
 // Track expanded state for each row
 const expandedRows = ref<Set<number>>(new Set());
 
+// Computed property to ensure reactivity
+
 const columns: DataTableColumns<Product> = [
   {
     type: "selection",
@@ -330,7 +332,7 @@ const paginationConfig = computed(() => ({
 
 /* Data table styling with Tailwind CSS */
 :deep(.n-data-table) {
-  @apply rounded-lg overflow-hidden;
+  @apply rounded-lg overflow-hidden !py-0;
 }
 
 /* Header styling */

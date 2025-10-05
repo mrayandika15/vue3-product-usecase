@@ -41,8 +41,8 @@ export const useProductStore = defineStore("product", () => {
 
     // Sort
     filtered.sort((a, b) => {
-      const aValue = a[filters.value.sortBy];
-      const bValue = b[filters.value.sortBy];
+      const aValue = a[filters.value.sortBy] as string | number;
+      const bValue = b[filters.value.sortBy] as string | number;
 
       if (filters.value.sortOrder === "asc") {
         return aValue > bValue ? 1 : -1;

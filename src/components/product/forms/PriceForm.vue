@@ -1,7 +1,7 @@
 <template>
   <n-card class="space-y-4">
     <div class="text-base font-medium">Harga</div>
-    <n-form-item label="Harga" path="price">
+    <n-form-item label="Harga" path="harga">
       <n-input
         :value="displayValue"
         placeholder="Rp 0"
@@ -16,14 +16,13 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import { NFormItem, NInput, NCard } from "naive-ui";
+import type { ProductCreateFormModel } from "@/types/product";
 
 const props = defineProps<{
-  model: {
-    price: number;
-  };
+  model: Pick<ProductCreateFormModel, "harga">;
 }>();
 
-const displayValue = ref<string>(formatIDR(props.model.price || 0));
+const displayValue = ref<string>(formatIDR(props.model.harga || 0));
 
 function formatIDR(value: number): string {
   const n = Number.isFinite(value) ? value : 0;
@@ -37,17 +36,17 @@ function parseIDR(input: string): number {
 
 function onInput(val: string) {
   const parsed = parseIDR(val);
-  props.model.price = parsed;
+  props.model.harga = parsed;
   displayValue.value = formatIDR(parsed);
 }
 
 function onBlur() {
   // ensure display is formatted on blur
-  displayValue.value = formatIDR(props.model.price || 0);
+  displayValue.value = formatIDR(props.model.harga || 0);
 }
 
 watch(
-  () => props.model.price,
+  () => props.model.harga,
   (price) => {
     displayValue.value = formatIDR(price || 0);
   }

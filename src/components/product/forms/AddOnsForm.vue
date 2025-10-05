@@ -26,7 +26,7 @@
           :bottom-bordered="false"
           :single-line="false"
           size="medium"
-          :row-key="(row) => row.value"
+          row-key="id"
         />
       </div>
     </div>
@@ -45,58 +45,60 @@ import {
   NSelect,
 } from "naive-ui";
 import { computed, h, ref } from "vue";
+import type { ProductCreateFormModel, AddOnItem } from "@/types/product";
 
 const props = defineProps<{
-  model: {
-    addOnsSelected: { label: string; value: string; status: boolean }[];
-  };
+  model: Pick<ProductCreateFormModel, "add_on" | "has_addon">;
 }>();
 
-const selectedValue = ref(null);
+const selectedValue = ref<number | null>(null);
 
 const options = [
-  { label: "Garansi", value: "warranty" },
-  { label: "Asuransi", value: "insurance" },
-  { label: "Bungkus Kado", value: "giftwrap" },
+  { label: "Garansi", value: 1 },
+  { label: "Asuransi", value: 2 },
+  { label: "Bungkus Kado", value: 3 },
 ];
+const optionMap = Object.fromEntries(options.map((o) => [o.value, o.label]));
 
 function onAdd() {
-  if (!selectedValue.value) return;
-  const exists = props.model.addOnsSelected.some(
-    (item) => item.value === selectedValue.value
+  if (selectedValue.value == null) return;
+  if (!props.model.add_on) props.model.add_on = [];
+  const exists = props.model.add_on.some(
+    (item) => item.id === selectedValue.value
   );
   if (!exists) {
-    const opt = options.find((o) => o.value === selectedValue.value)!;
-    props.model.addOnsSelected.push({
-      label: opt.label,
-      value: opt.value,
-      status: true,
-    });
+    props.model.add_on.push({ id: selectedValue.value, is_active: true });
+    props.model.has_addon = true;
   }
   selectedValue.value = null;
 }
 
-const tableData = computed(() => props.model.addOnsSelected);
+const tableData = computed<AddOnItem[]>(() => props.model.add_on ?? []);
 
 const columns = [
   {
     title: "Add On",
-    key: "label",
-    render: (row: { label: string }) => h("div", { class: "py-2" }, row.label),
+    key: "id",
+    render: (row: { id: number | null }) =>
+      h(
+        "div",
+        { class: "py-2" },
+        row.id != null ? optionMap[row.id] ?? `AddOn #${row.id}` : "-"
+      ),
   },
   {
     title: "Status",
-    key: "status",
+    key: "is_active",
     width: 120,
-    render: (row: { value: string; status: boolean }) =>
+    render: (row: { id: number | null; is_active: boolean | null }) =>
       h(NSwitch, {
-        value: row.status,
+        value: !!row.is_active,
         size: "medium",
         onUpdateValue: (val: boolean) => {
-          const target = props.model.addOnsSelected.find(
-            (i) => i.value === row.value
+          const target = (props.model.add_on ?? []).find(
+            (i) => i.id === row.id
           );
-          if (target) target.status = val;
+          if (target) target.is_active = val;
         },
       }),
   },
@@ -104,7 +106,7 @@ const columns = [
     title: "Tindakan",
     key: "actions",
     width: 90,
-    render: (row: { value: string }) =>
+    render: (row: { id: number | null }) =>
       h(
         NButton,
         {
@@ -113,10 +115,10 @@ const columns = [
           size: "small",
           class: "bg-transparent",
           onClick: () => {
-            const idx = props.model.addOnsSelected.findIndex(
-              (i) => i.value === row.value
-            );
-            if (idx !== -1) props.model.addOnsSelected.splice(idx, 1);
+            const list = props.model.add_on ?? [];
+            const idx = list.findIndex((i) => i.id === row.id);
+            if (idx !== -1) list.splice(idx, 1);
+            props.model.has_addon = (props.model.add_on ?? []).length > 0;
           },
         },
         {

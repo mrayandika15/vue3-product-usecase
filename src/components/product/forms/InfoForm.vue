@@ -4,9 +4,9 @@
       <!-- Info barang -->
       <div class="space-y-4">
         <div class="text-base font-medium">Info barang</div>
-        <n-form-item label="Nama Barang" path="name">
+        <n-form-item label="Nama Barang" path="nama_barang">
           <n-input
-            v-model:value="model.name"
+            v-model:value="model.nama_barang"
             placeholder="Contoh: Ayam Goreng"
           />
         </n-form-item>
@@ -30,9 +30,9 @@
                 </div>
               </template>
 
-              <n-form-item label="" path="description">
+              <n-form-item label="" path="deskripsi">
                 <n-input
-                  v-model:value="model.description"
+                  v-model:value="model.deskripsi"
                   type="textarea"
                   :autosize="{ minRows: 3, maxRows: 6 }"
                   placeholder="Tuliskan deskripsi produk"
@@ -46,9 +46,9 @@
       <!-- Organisasi Barang -->
       <div class="space-y-4">
         <div class="text-base font-medium">Organisasi Barang</div>
-        <n-form-item label="Kategori Barang" path="category">
+        <n-form-item label="Kategori Barang" path="kategori">
           <n-select
-            v-model:value="model.category"
+            v-model:value="model.kategori"
             :options="categoryOptions"
             placeholder="Contoh: Makanan, Handphone"
           />
@@ -76,22 +76,19 @@ import {
   NCard,
 } from "naive-ui";
 
+import type { ProductCreateFormModel } from "@/types/product";
+
 const props = defineProps<{
-  model: {
-    name: string;
-    description: string;
-    category: string | null;
-    file: File | null;
-  };
+  model: Pick<ProductCreateFormModel, "nama_barang" | "deskripsi" | "kategori" | "file">;
 }>();
 
 const expandedNames = ref<string[]>([]);
 
 const categoryOptions = [
-  { label: "Makanan", value: "makanan" },
-  { label: "Handphone", value: "handphone" },
-  { label: "Minuman", value: "minuman" },
-  { label: "Lainnya", value: "lainnya" },
+  { label: "Makanan", value: 1 },
+  { label: "Handphone", value: 2 },
+  { label: "Minuman", value: 3 },
+  { label: "Lainnya", value: 4 },
 ];
 </script>
 

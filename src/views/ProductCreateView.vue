@@ -21,32 +21,23 @@ import ProductForm from "@/components/product/ProductForm.vue";
 import { useMessage } from "naive-ui";
 import { reactive } from "vue";
 import { useRouter } from "vue-router";
+import type { ProductCreateFormModel } from "@/types/product";
 
 const router = useRouter();
 const message = useMessage();
 
-type FormModel = {
-  name: string;
-  description: string;
-  category: string | null;
-  file: File | null;
-  price: number;
-  sku: string;
-  unit: string;
-  selectedAddOn: string | null;
-  addOnsSelected: { label: string; value: string; status: boolean }[];
-};
-
-const model = reactive<FormModel>({
-  name: "",
-  description: "",
-  category: null,
-  file: null,
-  price: 0,
+const model = reactive<ProductCreateFormModel>({
+  nama_barang: "",
   sku: "",
+  harga: 0,
+  kategori: null,
   unit: "",
-  selectedAddOn: null,
-  addOnsSelected: [],
+  deskripsi: "",
+  has_variant: false,
+  has_addon: false,
+  as_addon: false,
+  add_on: [],
+  file: null,
 });
 
 const handleFormSubmit = () => {

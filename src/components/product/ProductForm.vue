@@ -22,18 +22,10 @@ import PriceForm from "@/components/product/forms/PriceForm.vue";
 import AddOnsForm from "@/components/product/forms/AddOnsForm.vue";
 import { NButton, NForm, type FormInst, type FormRules } from "naive-ui";
 import { ref } from "vue";
+import type { ProductCreateFormModel } from "@/types/product";
 
 const props = defineProps<{
-  model: {
-    name: string;
-    description: string;
-    category: string | null;
-    file: File | null;
-    price: number;
-    sku: string;
-    unit: string;
-    addOnsSelected: { label: string; value: string; status: boolean }[];
-  };
+  model: ProductCreateFormModel;
 }>();
 
 const emit = defineEmits<{
@@ -46,12 +38,12 @@ const formRef = ref<FormInst | null>(null);
 // Add-on options now live in AddOnsForm by default. Override via props if needed.
 
 const rules: FormRules = {
-  name: {
+  nama_barang: {
     required: true,
     message: "Nama Barang wajib diisi",
     trigger: ["input", "blur"],
   },
-  category: {
+  kategori: {
     required: true,
     message: "Kategori Barang wajib diisi",
     trigger: ["change", "blur"],
@@ -66,7 +58,7 @@ const rules: FormRules = {
     message: "Unit Barang wajib diisi",
     trigger: ["input", "blur"],
   },
-  price: {
+  harga: {
     required: true,
     validator: (_rule, value: number) => {
       return typeof value === "number" && value > 0;

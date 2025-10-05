@@ -64,3 +64,28 @@ export interface ProductState {
     perPage: number;
   };
 }
+
+// Create / Form Request Types
+export interface AddOnItem {
+  id: number | null; // nullable numeric id
+  is_active: boolean | null; // nullable boolean status
+}
+
+// Payload shape expected by backend for product creation
+export interface ProductCreateRequest {
+  nama_barang: string; // required|min:3|max:50
+  sku: string; // required|min:1|max:20
+  harga: number; // required|numeric
+  kategori: number | null; // required|numeric
+  unit: string; // required|min:1|max:20
+  deskripsi: string | null; // nullable
+  has_variant: boolean; // required (default false)
+  has_addon: boolean; // required (true if add_on exists)
+  as_addon: boolean; // required (default false)
+  add_on: AddOnItem[] | null; // nullable|array
+}
+
+// Form model used in UI (extends request with local-only fields)
+export interface ProductCreateFormModel extends ProductCreateRequest {
+  file: File | null; // local image upload, not part of payload
+}

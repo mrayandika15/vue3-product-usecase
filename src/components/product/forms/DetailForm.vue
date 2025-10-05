@@ -22,12 +22,10 @@
 
 <script setup lang="ts">
 import { NFormItem, NInput, NCard } from "naive-ui";
+import type { ProductCreateFormModel } from "@/types/product";
 
 const props = defineProps<{
-  model: {
-    sku: string;
-    unit: string;
-  };
+  model: Pick<ProductCreateFormModel, "sku" | "unit">;
 }>();
 </script>
 

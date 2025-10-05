@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
+    class="bg-gray-50 rounded-lg shadow-sm border border-gray-200 overflow-hidden"
   >
     <n-data-table
       :columns="columns"
@@ -13,8 +13,9 @@
       :striped="false"
       size="medium"
       :row-key="(row: Product) => row.id"
-      :max-height="390"
       :table-layout="'fixed'"
+      :max-height="400"
+      :min-height="400"
       :theme-overrides="dataTableThemeOverrides"
     >
       <template #empty>
@@ -42,28 +43,9 @@ import { ProductService } from "@/services/productService";
 
 type DataTableThemeOverrides = NonNullable<DataTableProps["themeOverrides"]>;
 
-// Define theme overrides for removing borders and custom pagination
+// Minimal theme overrides - only for removing borders
 const dataTableThemeOverrides: DataTableThemeOverrides = {
   borderColor: "transparent",
-  paginationMargin: "24px 0 0 0",
-  peers: {
-    Pagination: {
-      itemBorderRadius: "6px",
-      itemTextColor: "#374151",
-      itemTextColorHover: "#374151",
-      itemTextColorPressed: "#1d4ed8",
-      itemTextColorActive: "#ffffff",
-      itemColorHover: "#f9fafb",
-      itemColorPressed: "#eff6ff",
-      itemColorActive: "#3b82f6",
-      buttonColor: "#ffffff",
-      buttonColorHover: "#f9fafb",
-      buttonColorPressed: "#f3f4f6",
-      buttonIconColor: "#6b7280",
-      buttonIconColorHover: "#374151",
-      buttonIconColorPressed: "#111827",
-    },
-  },
 };
 
 interface Props {
@@ -103,6 +85,7 @@ const columns: DataTableColumns<Product> = [
   {
     title: "Nama Barang",
     key: "name",
+    width: 240,
     render: (row) =>
       h("div", { class: "flex gap-3 items-start py-2" }, [
         h(
@@ -133,34 +116,35 @@ const columns: DataTableColumns<Product> = [
               { class: "text-xs text-gray-500 leading-4" },
               row.category.name
             ),
-            row.has_variant
-              ? h("div", { class: "flex items-center gap-1 mt-1" }, [
-                  h(
-                    NTag,
-                    {
-                      size: "small",
-                      type: "info",
-                      class: "text-xs",
-                    },
-                    { default: () => "3 Varian" }
-                  ),
-                  ...(row.as_addon
-                    ? [
-                        h(
-                          NTag,
-                          {
-                            size: "small",
-                            type: "warning",
-                            class: "text-xs",
-                          },
-                          { default: () => "3 Add On" }
-                        ),
-                      ]
-                    : []),
-                ])
-              : null,
           ]
         ),
+        row.has_variant
+          ? h("div", { class: "flex items-center gap-1 mt-1" }, [
+              h(
+                NTag,
+                {
+                  size: "small",
+                  type: "info",
+                  class:
+                    "text-xs text-main bg-[#EFBB6D66] !border-0 rounded-md",
+                },
+                { default: () => `${row.has_variant} Varian` }
+              ),
+              ...(row.as_addon
+                ? [
+                    h(
+                      NTag,
+                      {
+                        size: "small",
+                        type: "warning",
+                        class: "text-xs",
+                      },
+                      { default: () => "3 Add On" }
+                    ),
+                  ]
+                : []),
+            ])
+          : null,
       ]),
   },
   {
@@ -224,21 +208,21 @@ const paginationConfig = computed(() => ({
 </script>
 
 <style scoped>
-/* Custom pagination styling using Tailwind CSS @apply directives */
+/* Custom pagination styling with Tailwind CSS */
 :deep(.n-pagination) {
-  @apply flex items-center  gap-2 w-full justify-end p-5 bg-white h-[36px];
+  @apply flex items-center gap-2 p-4 h-[32px] justify-end mb-2 bg-white w-full;
 }
 
 :deep(.n-pagination .n-pagination-item) {
-  @apply min-w-8 h-8 flex items-center justify-center text-sm font-medium rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors duration-200;
+  @apply min-w-[32px] h-7 flex items-center justify-center rounded-md border !border-gray-200 bg-white text-sm font-medium !text-main hover:bg-gray-50 hover:border-gray-300 transition-all duration-200;
 }
 
 :deep(.n-pagination .n-pagination-item--active) {
-  @apply bg-blue-600 border-blue-600 text-white hover:bg-blue-700 hover:border-blue-700;
+  @apply bg-blue-500 border-blue-500 text-white hover:bg-blue-600 hover:border-blue-600;
 }
 
 :deep(.n-pagination .n-pagination-item--disabled) {
-  @apply opacity-50 cursor-not-allowed hover:bg-white hover:border-gray-300;
+  @apply opacity-50 cursor-not-allowed hover:bg-white hover:border-gray-200;
 }
 
 :deep(.n-pagination .n-pagination-quick-jumper) {
@@ -257,16 +241,46 @@ const paginationConfig = computed(() => ({
   @apply hidden;
 }
 
-/* Navigation buttons (prev/next) */
-:deep(.n-pagination .n-pagination-item:first-child),
-:deep(.n-pagination .n-pagination-item:last-child) {
-  @apply px-3 font-medium;
+:deep(.n-pagination .n-pagination-prev),
+:deep(.n-pagination .n-pagination-next) {
+  @apply min-w-[32px] h-8 flex items-center justify-center rounded-md border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 transition-all duration-200;
 }
 
-/* Ellipsis styling */
-:deep(
-    .n-pagination .n-pagination-item--disabled:not(.n-pagination-item--active)
-  ) {
-  @apply border-transparent bg-transparent text-gray-400;
+:deep(.n-pagination .n-pagination-prev--disabled),
+:deep(.n-pagination .n-pagination-next--disabled) {
+  @apply opacity-50 cursor-not-allowed hover:bg-white hover:border-gray-200 hover:text-gray-600;
+}
+
+:deep(.n-pagination .n-pagination-item--ellipsis) {
+  @apply border-0 bg-transparent text-gray-400 hover:bg-transparent;
+}
+
+/* Data table styling with Tailwind CSS */
+:deep(.n-data-table) {
+  @apply rounded-lg overflow-hidden;
+}
+
+/* Header styling */
+:deep(.n-data-table-th) {
+  @apply bg-gray-50 !px-2 !text-gray-700 !text-xs font-semibold uppercase tracking-wide  py-2 border-0;
+}
+
+/* Table cell styling */
+:deep(.n-data-table-td) {
+  @apply bg-white text-gray-900 text-sm px-5 py-4 border-0;
+}
+
+/* Row hover effect */
+:deep(.n-data-table-tr:hover .n-data-table-td) {
+  @apply bg-gray-50;
+}
+
+/* Remove default borders */
+:deep(.n-data-table-wrapper) {
+  @apply border-0;
+}
+
+:deep(.n-data-table-base-table) {
+  @apply border-0;
 }
 </style>

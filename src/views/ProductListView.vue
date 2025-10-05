@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen px-4 py-6" style="background-color: #e9ebe8">
+  <div class="min-h-screen px-4 py-6" style="background-color: #fafafa">
     <main
       class="max-w-7xl flex flex-col gap-2 mx-auto px-4 sm:px-6 lg:px-8 py-8"
     >
@@ -8,7 +8,7 @@
           Tambah Barang
         </BaseButton>
       </header>
-      <n-card content-class="gap-2 flex flex-col p-0">
+      <n-card content-class="flex flex-col gap-2">
         <ProductFilters
           :filters="productStore.filters"
           :categories="productStore.categories"

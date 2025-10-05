@@ -49,7 +49,7 @@ const emit = defineEmits<{
 }>();
 
 const inputValue = ref(props.modelValue);
-let debounceTimer: NodeJS.Timeout | null = null;
+let debounceTimer: number | null = null;
 
 watch(
   () => props.modelValue,

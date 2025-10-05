@@ -38,7 +38,7 @@ interface Props {
   actionText?: string;
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   showAction: false,
   actionText: "Add Item",
 });

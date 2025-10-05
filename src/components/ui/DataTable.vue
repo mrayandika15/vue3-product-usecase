@@ -17,6 +17,12 @@
       :max-height="400"
       :min-height="400"
       :theme-overrides="dataTableThemeOverrides"
+      :default-expand-all="false"
+      :indent="24"
+      children-key="children"
+      :row-props="(rowData: Product) => ({
+        'data-is-variant': rowData.isVariant || false
+      } as any)"
     >
       <template #empty>
         <EmptyState
@@ -33,13 +39,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed, h } from "vue";
-import { NDataTable, NSwitch, NTag, NIcon } from "naive-ui";
-import { ImageOutline } from "@vicons/ionicons5";
-import type { DataTableColumns, DataTableProps } from "naive-ui";
+import { formatDate, formatPrice } from "@/helpers/utils";
 import type { Product } from "@/types/product";
+import {
+  ChevronDownOutline,
+  ChevronUpOutline,
+  ImageOutline,
+} from "@vicons/ionicons5";
+import type { DataTableColumns, DataTableProps } from "naive-ui";
+import { NDataTable, NIcon, NSwitch, NTag } from "naive-ui";
+import { computed, h, ref } from "vue";
 import EmptyState from "./EmptyState.vue";
-import { ProductService } from "@/services/productService";
 
 type DataTableThemeOverrides = NonNullable<DataTableProps["themeOverrides"]>;
 
@@ -77,10 +87,14 @@ const emit = defineEmits<{
   "toggle-status": [id: number, status: boolean];
 }>();
 
+// Track expanded state for each row
+const expandedRows = ref<Set<number>>(new Set());
+
 const columns: DataTableColumns<Product> = [
   {
     type: "selection",
     width: 50,
+    disabled: (row: Product) => row.isVariant === true,
   },
   {
     title: "Nama Barang",
@@ -108,7 +122,11 @@ const columns: DataTableColumns<Product> = [
           [
             h(
               "div",
-              { class: "font-medium text-gray-900 text-sm leading-5" },
+              {
+                class: `font-medium text-gray-900 text-sm leading-5 ${
+                  row.isVariant ? "text-gray-600 text-xs" : ""
+                }`,
+              },
               row.name
             ),
             h(
@@ -118,17 +136,64 @@ const columns: DataTableColumns<Product> = [
             ),
           ]
         ),
-        row.has_variant
+        // Only show variant tags for parent products, not for variants themselves
+        !row.isVariant && row.has_variant
           ? h("div", { class: "flex items-center gap-1 mt-1" }, [
               h(
-                NTag,
+                "div",
                 {
-                  size: "small",
-                  type: "info",
-                  class:
-                    "text-xs text-main bg-[#EFBB6D66] !border-0 rounded-md",
+                  class: "flex items-center cursor-pointer",
+                  onClick: (e: Event) => {
+                    e.stopPropagation();
+                    // Toggle expanded state
+                    const isExpanded = expandedRows.value.has(row.id);
+                    if (isExpanded) {
+                      expandedRows.value.delete(row.id);
+                    } else {
+                      expandedRows.value.add(row.id);
+                    }
+                    // Find the expand trigger and click it
+                    const target = e.target as HTMLElement;
+                    const expandTrigger = target
+                      ?.closest("tr")
+                      ?.querySelector(
+                        ".n-data-table-expand-trigger"
+                      ) as HTMLElement;
+                    if (expandTrigger) {
+                      expandTrigger.click();
+                    }
+                  },
                 },
-                { default: () => `${row.has_variant} Varian` }
+                [
+                  h(
+                    NTag,
+                    {
+                      size: "small",
+                      type: "info",
+                      bordered: false,
+                      class:
+                        "text-xs text-main bg-[#EFBB6D66]  rounded-md flex items-center gap-1 cursor-pointer",
+                    },
+                    {
+                      default: () => [
+                        `${row.has_variant} Varian`,
+                        h(
+                          NIcon,
+                          {
+                            size: 12,
+                            class: "ml-1 transition-transform duration-200",
+                          },
+                          {
+                            default: () =>
+                              expandedRows.value.has(row.id)
+                                ? h(ChevronUpOutline)
+                                : h(ChevronDownOutline),
+                          }
+                        ),
+                      ],
+                    }
+                  ),
+                ]
               ),
               ...(row.as_addon
                 ? [
@@ -137,9 +202,11 @@ const columns: DataTableColumns<Product> = [
                       {
                         size: "small",
                         type: "warning",
-                        class: "text-xs",
+                        bordered: false,
+                        class:
+                          "text-xs !bg-[#DEEFFC66] !text-main rounded-md items-center gap-1",
                       },
-                      { default: () => "3 Add On" }
+                      { default: () => `${row.as_addon} Add On` }
                     ),
                   ]
                 : []),
@@ -155,7 +222,7 @@ const columns: DataTableColumns<Product> = [
       h(
         "div",
         { class: "text-sm font-medium text-gray-900 py-2" },
-        ProductService.formatPrice(row.price)
+        formatPrice(row.price)
       ),
   },
   {
@@ -173,22 +240,28 @@ const columns: DataTableColumns<Product> = [
       h(
         "div",
         { class: "text-sm text-gray-600 py-2" },
-        ProductService.formatDate(row.updated_at)
+        formatDate(row.updated_at)
       ),
   },
   {
     title: "Tindakan",
     key: "actions",
     width: 100,
-    render: (row) =>
-      h("div", { class: "py-2" }, [
+    render: (row) => {
+      // Hide actions for variant rows
+      if (row.isVariant) {
+        return h("div", { class: "py-2" }, "");
+      }
+
+      return h("div", { class: "py-2" }, [
         h(NSwitch, {
           value: row.is_active === 1,
           size: "medium",
           onUpdateValue: (value: boolean) =>
             emit("toggle-status", row.id, value),
         }),
-      ]),
+      ]);
+    },
   },
 ];
 
@@ -275,9 +348,38 @@ const paginationConfig = computed(() => ({
   @apply bg-gray-50;
 }
 
+/* Tree expand icon styling */
+:deep(.n-data-table-expand-trigger) {
+  @apply hidden;
+}
+
+/* Variant row styling - lighter background for child rows */
+:deep(.n-data-table-tr[data-is-variant="true"] .n-data-table-td) {
+  @apply bg-[#E9EBE8] border-l-2 border-l-blue-200;
+}
+
+:deep(.n-data-table-tr[data-is-variant="true"]:hover .n-data-table-td) {
+  @apply bg-gray-100;
+}
+
+/* Tree indentation styling */
+:deep(.n-data-table-td--tree-col) {
+  @apply pl-6;
+}
+
+/* Custom tree line styling */
+:deep(.n-data-table-td--tree-col::before) {
+  @apply hidden;
+}
+
 /* Remove default borders */
 :deep(.n-data-table-wrapper) {
   @apply border-0;
+}
+
+/* Hide checkbox for variant rows */
+:deep(.n-data-table-tr[data-is-variant="true"] .n-checkbox) {
+  @apply hidden;
 }
 
 :deep(.n-data-table-base-table) {

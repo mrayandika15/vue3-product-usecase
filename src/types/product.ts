@@ -45,18 +45,18 @@ export interface Product {
 }
 
 // UI State Types
-export interface ProductFilters {
+export interface ProductQuery {
   search: string;
-  tampilkan: number;
-  sortBy: keyof Product;
-  sortOrder: "asc" | "desc";
+  page_count: number;
+  active?: number | null | undefined;
+  page: number;
 }
 
 export interface ProductState {
   products: Product[];
   loading: boolean;
   error: string | null;
-  filters: ProductFilters;
+  filters: ProductQuery;
   pagination: {
     currentPage: number;
     totalPages: number;

@@ -1,4 +1,10 @@
-import { ProductListResponse } from "@/types/product";
+import type { ApiMeta, ListPaginatedResponse } from "@/types/api";
+import type { Product } from "@/types/product";
+
+interface ProductListResponse {
+  meta: ApiMeta;
+  data: ListPaginatedResponse<Product>;
+}
 
 const PRODUCT_LIST_DUMMY: ProductListResponse = {
   meta: {

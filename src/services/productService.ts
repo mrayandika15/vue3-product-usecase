@@ -1,28 +1,21 @@
 import apiService from "@/services/apiService";
-import type {
-  ApiResponse,
-  ListPaginatedResponse,
-  ProductListRequest,
-} from "@/types/api";
-import type { Product } from "@/types/product";
+import type { ApiResponse, ListPaginatedResponse } from "@/types/api";
+import type { Product, ProductQuery } from "@/types/product";
 
 export class ProductService {
   // Get products using POST request as specified
-  static async getProducts(
-    page: number = 1,
-    perPage: number = 10,
-    search?: string,
-    sortBy?: string,
-    sortOrder?: "asc" | "desc"
-  ): Promise<ApiResponse<ListPaginatedResponse<Product>>> {
+  static async getProducts({
+    page,
+    search,
+    active,
+    page_count,
+  }: ProductQuery): Promise<ApiResponse<ListPaginatedResponse<Product>>> {
     try {
-      const requestData: ProductListRequest = {
+      const requestData: ProductQuery = {
         page,
-        per_page: perPage,
         search,
-        sort_by: sortBy,
-        sort_order: sortOrder,
-        tampilkan: perPage,
+        active,
+        page_count,
       };
 
       // Using POST request to /product/item/list endpoint
@@ -76,24 +69,5 @@ export class ProductService {
       }
       return product;
     });
-  }
-
-  // Additional method for searching products
-  static async searchProducts(
-    searchTerm: string,
-    page: number = 1,
-    perPage: number = 10
-  ): Promise<ApiResponse<ListPaginatedResponse<Product>>> {
-    return this.getProducts(page, perPage, searchTerm);
-  }
-
-  // Method for getting products with specific sorting
-  static async getProductsSorted(
-    sortBy: string,
-    sortOrder: "asc" | "desc" = "asc",
-    page: number = 1,
-    perPage: number = 10
-  ): Promise<ApiResponse<ListPaginatedResponse<Product>>> {
-    return this.getProducts(page, perPage, undefined, sortBy, sortOrder);
   }
 }

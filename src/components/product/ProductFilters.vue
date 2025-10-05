@@ -4,9 +4,9 @@
       <!-- Left side - Navigation tabs -->
       <div class="flex-1">
         <Tabs
-          v-model="activeTab"
+          :model-value="activeTab"
           :tabs="tabOptions"
-          @change="handleTabChange"
+          @change="onTabChange"
         />
       </div>
       <!-- Right side - Search and filters -->
@@ -14,22 +14,23 @@
         <!-- Category Filter -->
         <div class="flex-1">
           <FilterSelect
-            v-model="localFilters.tampilkan"
-            :options="tampilkanOptions"
+            :model-value="pageCount"
+            :options="options"
             label="Tampilkan"
             size="large"
             class="h-[41px]"
+            @update:model-value="onPageCountChange"
           />
         </div>
 
         <!-- Search Input -->
         <div class="flex-1">
           <SearchInput
-            v-model="localFilters.search"
+            :model-value="searchValue"
             placeholder="Cari barang"
             size="large"
             class="h-[41px]"
-            @search="handleSearchChange"
+            @search="onSearchChange"
           />
         </div>
       </div>
@@ -38,58 +39,68 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
-import { useProductStore } from "@/stores/productStore";
+import { computed } from "vue";
 import SearchInput from "@/components/ui/SearchInput.vue";
 import FilterSelect from "@/components/ui/FilterSelect.vue";
 import Tabs from "@/components/ui/Tabs.vue";
 
-const productStore = useProductStore();
+// Props interface
+interface Props {
+  activeTab: string;
+  searchValue: string;
+  pageCount: number;
+  meta: {
+    activeCount: number;
+    inactiveCount: number;
+    count: number;
+  };
+}
 
-// Local reactive state
-const localFilters = ref({
-  search: productStore.filters.search,
-  tampilkan: 10, // Default numerical value
+// Emits interface
+interface Emits {
+  (e: "tab-change", value: string): void;
+  (e: "search-change", value: string): void;
+  (e: "page-count-change", value: number): void;
+}
+
+// Define props with defaults
+const props = withDefaults(defineProps<Props>(), {
+  activeTab: "all",
+  searchValue: "",
+  pageCount: 10,
 });
 
-// Active tab state
-const activeTab = ref("semua-barang");
+// Define emits
+const emit = defineEmits<Emits>();
+const meta = computed(() => props.meta);
 
 // Tab options for the custom tabs component
 const tabOptions = computed(() => [
-  { label: "Semua Barang", value: "semua-barang" },
-  { label: "Aktif", value: "aktif" },
-  { label: "Nonaktif", value: "nonaktif" },
+  { label: "Semua Barang", value: "all", count: meta.value.count },
+  { label: "Aktif", value: "1", count: meta.value.activeCount },
+  { label: "Nonaktif", value: "0", count: meta.value.inactiveCount },
 ]);
 
 // Tampilkan options for numerical filter
-const tampilkanOptions = computed(() => [
+const options = computed(() => [
   { label: "10", value: 10 },
   { label: "25", value: 25 },
   { label: "50", value: 50 },
   { label: "100", value: 100 },
 ]);
 
-// Watch for changes and update store
-watch(
-  localFilters,
-  (newFilters) => {
-    // Update store with new filters structure
-    productStore.updateFilters({
-      search: newFilters.search,
-      tampilkan: newFilters.tampilkan,
-    });
-  },
-  { deep: true }
-);
-
-// Event handlers
-const handleSearchChange = (value: string) => {
-  localFilters.value.search = value;
+// Event handlers - pure presentation layer
+const onSearchChange = (value: string) => {
+  emit("search-change", value);
 };
 
-const handleTabChange = (tab: string) => {
-  activeTab.value = tab;
-  // Here you can add logic to filter by status if needed
+const onTabChange = (tab: string) => {
+  emit("tab-change", tab);
+};
+
+const onPageCountChange = (value: string | number | null) => {
+  if (typeof value === "number") {
+    emit("page-count-change", value);
+  }
 };
 </script>

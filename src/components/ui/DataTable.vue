@@ -7,6 +7,7 @@
       :data="data"
       :loading="loading"
       :pagination="paginationConfig"
+      :remote="true"
       :single-line="false"
       :bordered="false"
       :bottom-bordered="false"
@@ -46,9 +47,13 @@ import {
   ChevronUpOutline,
   ImageOutline,
 } from "@vicons/ionicons5";
-import type { DataTableColumns, DataTableProps } from "naive-ui";
+import type {
+  DataTableColumns,
+  DataTableProps,
+  PaginationProps,
+} from "naive-ui";
 import { NDataTable, NIcon, NSwitch, NTag } from "naive-ui";
-import { computed, h, ref } from "vue";
+import { h, reactive, ref } from "vue";
 import EmptyState from "./EmptyState.vue";
 
 type DataTableThemeOverrides = NonNullable<DataTableProps["themeOverrides"]>;
@@ -60,7 +65,6 @@ const dataTableThemeOverrides: DataTableThemeOverrides = {
 
 interface Props {
   data: Product[];
-  loading?: boolean;
   currentPage?: number;
   totalPages?: number;
   totalItems?: number;
@@ -70,6 +74,7 @@ interface Props {
   emptyIcon?: string;
   showEmptyAction?: boolean;
   emptyActionText?: string;
+  loading?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -267,25 +272,22 @@ const columns: DataTableColumns<Product> = [
   },
 ];
 
-const paginationConfig = computed(() => ({
+const paginationConfig: PaginationProps = reactive({
   page: props.currentPage,
+  pageSize: props.perPage,
   pageCount: props.totalPages,
   itemCount: props.totalItems,
-  pageSize: props.perPage,
   showSizePicker: false,
-  showQuickJumper: false,
-  prefix: () => null,
-  suffix: () => null,
   onUpdatePage: (page: number) => {
     emit("page-change", page);
   },
-}));
+});
 </script>
 
 <style scoped>
 /* Custom pagination styling with Tailwind CSS */
 :deep(.n-pagination) {
-  @apply flex items-center gap-2 p-4 h-[32px] justify-end mb-2 bg-white w-full;
+  @apply flex items-center gap-2 p-4 h-[32px] justify-end mb-2  w-full;
 }
 
 :deep(.n-pagination .n-pagination-item) {
@@ -337,7 +339,7 @@ const paginationConfig = computed(() => ({
 
 /* Header styling */
 :deep(.n-data-table-th) {
-  @apply bg-gray-50 !px-2 !text-gray-700 !text-xs font-semibold uppercase tracking-wide  py-2 border-0;
+  @apply bg-gray-50 !px-2 !text-gray-700 !text-xs font-semibold uppercase tracking-wide  py-4 border-0;
 }
 
 /* Table cell styling */

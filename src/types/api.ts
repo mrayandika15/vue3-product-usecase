@@ -33,16 +33,6 @@ export interface ApiError {
   status?: number;
 }
 
-// Product API specific types
-export interface ProductListRequest {
-  search?: string;
-  tampilkan?: number;
-  page?: number;
-  per_page?: number;
-  sort_by?: string;
-  sort_order?: "asc" | "desc";
-}
-
 export interface ApiResponse<T> {
   meta: ApiMeta;
   data: T;

@@ -10,21 +10,23 @@
       </header>
       <n-card content-class="flex flex-col gap-2">
         <ProductFilters
-          :filters="productStore.filters"
-          :categories="productStore.categories"
-          @update:filters="productStore.updateFilters"
+          :meta="productStore.meta"
+          :active-tab="activeTab"
+          :search-value="searchValue"
+          :page-count="pageCount"
+          @tab-change="handleTabChange"
+          @search-change="handleSearchChange"
+          @page-count-change="handlePageCountChange"
         />
         <DataTable
           :data="productStore.products"
-          :loading="productStore.loading"
+          :loading="productStore.isLoading"
           :current-page="productStore.pagination.currentPage"
           :total-pages="productStore.pagination.totalPages"
           :total-items="productStore.pagination.totalItems"
           :per-page="productStore.pagination.perPage"
           @page-change="handlePageChange"
           @empty-action="handleAddProduct"
-          @row-select="handleRowSelect"
-          @toggle-status="handleToggleStatus"
         />
       </n-card>
     </main>
@@ -32,33 +34,50 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import { AddOutline as AddIcon } from "@vicons/ionicons5";
-import { useProductStore } from "@/stores/productStore";
+import { useListProductStore } from "@/stores/listProductStore";
+
 import DataTable from "@/components/ui/DataTable.vue";
 import BaseButton from "@/components/ui/BaseButton.vue";
 import ProductFilters from "@/components/product/ProductFilters.vue";
 import { NCard } from "naive-ui";
 
-const productStore = useProductStore();
+const productStore = useListProductStore();
 
-onMounted(async () => {
-  await productStore.loadProducts();
-});
+// Local state for filters
+const activeTab = ref<string>("all");
+const searchValue = ref<string>(productStore.filters.search);
+const pageCount = ref<number>(productStore.filters.page_count);
 
-function handleAddProduct() {
-  console.log("Add product clicked");
-}
+onMounted(async () => {});
+
+function handleAddProduct() {}
 
 function handlePageChange(page: number) {
-  productStore.loadProducts(page);
+  productStore.setPage(page);
+  productStore.invalidateProductQueries();
 }
 
-function handleRowSelect(id: number, checked: boolean) {
-  console.log(`Product ${id} selected: ${checked}`);
+// Filter event handlers moved from ProductFilters component
+function handleSearchChange(value: string) {
+  productStore.updateFilters({ search: value });
+  productStore.setPage(1);
+  productStore.invalidateProductQueries();
 }
 
-function handleToggleStatus(id: number, status: boolean) {
-  console.log(`Product ${id} status changed to: ${status}`);
+function handlePageCountChange(value: number) {
+  productStore.updateFilters({ page_count: value });
+  productStore.setPage(1);
+  productStore.invalidateProductQueries();
+}
+
+function handleTabChange(tab: string) {
+  activeTab.value = tab;
+  productStore.updateFilters({
+    active: tab === "all" ? null : Number(tab),
+  });
+  productStore.setPage(1);
+  productStore.invalidateProductQueries();
 }
 </script>

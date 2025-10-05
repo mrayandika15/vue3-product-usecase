@@ -50,26 +50,28 @@ const activeTab = ref<string>("all");
 const searchValue = ref<string>(productStore.filters.search);
 const pageCount = ref<number>(productStore.filters.page_count);
 
-onMounted(async () => {});
+onMounted(async () => {
+  productStore.initialFetchProduct();
+});
 
 function handleAddProduct() {}
 
 function handlePageChange(page: number) {
   productStore.setPage(page);
-  productStore.invalidateProductQueries();
+  productStore.refetch();
 }
 
 // Filter event handlers moved from ProductFilters component
 function handleSearchChange(value: string) {
   productStore.updateFilters({ search: value });
   productStore.setPage(1);
-  productStore.invalidateProductQueries();
+  productStore.refetch();
 }
 
 function handlePageCountChange(value: number) {
   productStore.updateFilters({ page_count: value });
   productStore.setPage(1);
-  productStore.invalidateProductQueries();
+  productStore.refetch();
 }
 
 function handleTabChange(tab: string) {
@@ -78,6 +80,6 @@ function handleTabChange(tab: string) {
     active: tab === "all" ? null : Number(tab),
   });
   productStore.setPage(1);
-  productStore.invalidateProductQueries();
+  productStore.refetch();
 }
 </script>

@@ -1,11 +1,9 @@
 import { ProductService } from "@/services/productService";
 import type { Product, ProductQuery } from "@/types/product";
-import { useQuery, useQueryClient } from "@tanstack/vue-query";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 
 export const useListProductStore = defineStore("product", () => {
-  const queryClient = useQueryClient();
   const currentPage = ref(1);
   const meta = ref({
     activeCount: 0,
@@ -21,23 +19,15 @@ export const useListProductStore = defineStore("product", () => {
     page: currentPage.value,
   });
 
-  // Query key factory
-  const createProductsQueryKey = (
-    page: number,
-    currentFilters: ProductQuery
-  ) => ["products", page, currentFilters.search, currentFilters.page_count];
+  // Local state replacing Vue Query
+  const productsData = ref<any | null>(null);
+  const isLoading = ref(false);
+  const error = ref<unknown | null>(null);
 
-  // Initialize products query
-  const {
-    data: productsData,
-    isLoading,
-    error,
-    refetch,
-  } = useQuery({
-    queryKey: computed(() =>
-      createProductsQueryKey(currentPage.value, filters.value)
-    ),
-    queryFn: async () => {
+  async function initialFetchProduct() {
+    isLoading.value = true;
+    error.value = null;
+    try {
       const response = await ProductService.getProducts(filters.value);
 
       meta.value = {
@@ -46,9 +36,13 @@ export const useListProductStore = defineStore("product", () => {
         count: response?.count_all || 0,
       };
 
-      return response?.data;
-    },
-  });
+      productsData.value = response?.data ?? null;
+    } catch (err) {
+      error.value = err;
+    } finally {
+      isLoading.value = false;
+    }
+  }
 
   // Computed properties
   const products = computed<Product[]>(() => productsData.value?.data || []);
@@ -73,9 +67,10 @@ export const useListProductStore = defineStore("product", () => {
     currentPage.value = page;
   }
 
-  // Invalidate all product queries (useful for cache management)
-  function invalidateProductQueries() {
-    queryClient.invalidateQueries({ queryKey: ["products"] });
+  // Invalidate and refetch products (traditional Pinia way)
+
+  function refetch() {
+    initialFetchProduct();
   }
 
   return {
@@ -94,6 +89,6 @@ export const useListProductStore = defineStore("product", () => {
     updateFilters,
     setPage,
     refetch,
-    invalidateProductQueries,
+    initialFetchProduct,
   };
 });

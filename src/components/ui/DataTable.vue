@@ -14,6 +14,8 @@
       :striped="false"
       size="medium"
       :row-key="(row: Product) => row.id"
+      :checked-row-keys="checkedRowKeys"
+      @update:checked-row-keys="onUpdateCheckedRowKeys"
       :table-layout="'fixed'"
       :max-height="400"
       :min-height="400"
@@ -91,10 +93,13 @@ const emit = defineEmits<{
   "empty-action": [];
   "row-select": [id: number, checked: boolean];
   "toggle-status": [id: number, status: boolean];
+  "selection-change": [ids: number[]];
 }>();
 
 // Track expanded state for each row
 const expandedRows = ref<Set<number>>(new Set());
+// Track selection keys for checkbox selection
+const checkedRowKeys = ref<number[]>([]);
 
 // Router for navigation to edit page
 const router = useRouter();
@@ -291,6 +296,11 @@ const paginationConfig: PaginationProps = reactive({
     emit("page-change", page);
   },
 });
+
+function onUpdateCheckedRowKeys(keys: Array<number | string>) {
+  checkedRowKeys.value = keys.map((k) => Number(k));
+  emit("selection-change", checkedRowKeys.value);
+}
 </script>
 
 <style scoped>

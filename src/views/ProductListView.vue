@@ -14,9 +14,12 @@
           :active-tab="activeTab"
           :search-value="searchValue"
           :page-count="pageCount"
+          :selected-count="selectedItems.length"
           @tab-change="handleTabChange"
           @search-change="handleSearchChange"
           @page-count-change="handlePageCountChange"
+          @bulk-activate="handleBulkActivate"
+          @bulk-deactivate="handleBulkDeactivate"
         />
         <DataTable
           :data="productStore.products"
@@ -27,6 +30,7 @@
           :per-page="productStore.pagination.perPage"
           @page-change="handlePageChange"
           @empty-action="handleAddProduct"
+          @selection-change="handleSelectionChange"
           @toggle-status="handleToggleStatus"
         />
       </n-card>
@@ -49,6 +53,7 @@ import router from "@/router";
 const productStore = useListProductStore();
 const { changeStatus } = useChangeItemStatus();
 const message = useMessage();
+const selectedItems = ref<number[]>([]);
 
 // Local state for filters
 const activeTab = ref<string>("all");
@@ -98,6 +103,24 @@ function handleTabChange(tab: string) {
   });
   productStore.setPage(1);
   productStore.refetch();
+}
+
+function handleSelectionChange(ids: number[]) {
+  selectedItems.value = ids;
+}
+
+function handleBulkActivate() {
+  if (!selectedItems.value.length) return;
+  message.info(`${selectedItems.value.length} produk akan diaktifkan (belum diimplementasi).`, {
+    duration: 2500,
+  });
+}
+
+function handleBulkDeactivate() {
+  if (!selectedItems.value.length) return;
+  message.info(`${selectedItems.value.length} produk akan dinonaktifkan (belum diimplementasi).`, {
+    duration: 2500,
+  });
 }
 
 // Toggle ON/OFF status for a product item

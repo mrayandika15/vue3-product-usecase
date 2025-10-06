@@ -1,6 +1,28 @@
 <template>
   <div>
-    <div class="flex items-center justify-between gap-4">
+    <!-- Selected items bar -->
+    <div v-if="selectedCount > 0" class="flex items-center gap-3 mb-3">
+      <div class="text-sm text-gray-700">
+        <span class="font-medium">{{ selectedCount }}</span> Produk dipilih
+      </div>
+      <div class="flex items-center gap-4">
+        <button
+          type="button"
+          class="underline text-[#5991F2] font-bold"
+          @click="emit('bulk-deactivate')"
+        >
+          Nonaktifkan
+        </button>
+        <button
+          type="button"
+          class="underline text-[#5991F2] font-bold"
+          @click="emit('bulk-activate')"
+        >
+          Aktifkan
+        </button>
+      </div>
+    </div>
+    <div class="flex items-center justify-between gap-4" v-else>
       <!-- Left side - Navigation tabs -->
       <div class="flex-1">
         <Tabs
@@ -54,6 +76,7 @@ interface Props {
     inactiveCount: number;
     count: number;
   };
+  selectedCount?: number;
 }
 
 // Emits interface
@@ -61,6 +84,8 @@ interface Emits {
   (e: "tab-change", value: string): void;
   (e: "search-change", value: string): void;
   (e: "page-count-change", value: number): void;
+  (e: "bulk-activate"): void;
+  (e: "bulk-deactivate"): void;
 }
 
 // Define props with defaults
@@ -68,6 +93,7 @@ const props = withDefaults(defineProps<Props>(), {
   activeTab: "all",
   searchValue: "",
   pageCount: 10,
+  selectedCount: 0,
 });
 
 // Define emits

@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5173:80" # expose nginx on 5173 for familiarity with Vite
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped

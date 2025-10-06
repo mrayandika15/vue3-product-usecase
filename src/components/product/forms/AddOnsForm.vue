@@ -2,9 +2,19 @@
   <div class="pb-12">
     <n-card>
       <div class="space-y-2">
-        <div class="text-base font-medium">Add On</div>
-        <div class="text-xs text-gray-500">
-          Tambahkan Add On pada barang Anda
+        <div class="flex items-start justify-between">
+          <div>
+            <div class="text-base font-medium">Add On</div>
+            <div class="text-xs text-gray-500">
+              Tambahkan Add On pada barang Anda
+            </div>
+          </div>
+          <div class="text-xs text-gray-500">
+            Limit Penambahan Add On
+            <span class="text-[#5991F2] font-semibold">
+              ({{ countAddOns }}/{{ MAX_ADDONS }})
+            </span>
+          </div>
         </div>
 
         <n-form-item label="Pilih Add On" path="addOn">
@@ -16,8 +26,16 @@
               placeholder="-- Pilih Add On --"
               class="flex-1"
               clearable
+              :disabled="countAddOns >= MAX_ADDONS"
             />
-            <n-button type="primary" ghost @click="onAdd"> + Tambah </n-button>
+            <n-button
+              type="primary"
+              ghost
+              @click="onAdd"
+              :disabled="countAddOns >= MAX_ADDONS"
+            >
+              + Tambah
+            </n-button>
           </div>
         </n-form-item>
 
@@ -48,6 +66,7 @@ import {
   NIcon,
   NSwitch,
   NSelect,
+  useMessage,
 } from "naive-ui";
 import { computed, h, ref, onMounted } from "vue";
 import type { ProductCreateFormModel, AddOnItem } from "@/types/product";
@@ -58,6 +77,8 @@ const props = defineProps<{
 }>();
 
 const selectedValue = ref<number | null>(null);
+const MAX_ADDONS = 5;
+const message = useMessage();
 
 // Store-backed options
 const addOnStore = useAddOnStore();
@@ -77,6 +98,10 @@ const optionMap = computed<Record<number, string>>(() => {
 });
 
 function onAdd() {
+  if (countAddOns.value >= MAX_ADDONS) {
+    message.warning(`Batas maksimal ${MAX_ADDONS} Add On tercapai.`);
+    return;
+  }
   if (selectedValue.value == null) return;
   if (!props.model.add_on) props.model.add_on = [];
   const exists = props.model.add_on.some(
@@ -97,6 +122,8 @@ const tableData = computed<AddOnItem[]>(() => props.model.add_on ?? []);
 const hasTableData = computed<boolean>(
   () => (props.model.add_on ?? []).length > 0
 );
+
+const countAddOns = computed<number>(() => (props.model.add_on ?? []).length);
 
 // Provide row key as a function to satisfy NDataTable prop type
 const rowKey = (row: AddOnItem) => row.id as number;

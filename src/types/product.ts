@@ -12,6 +12,12 @@ export interface Category {
   updated_by: string | null;
 }
 
+// Category API response shape (matches CATEGORY_RESPONSE.json)
+export interface CategoryListResponse {
+  meta: ApiMeta;
+  data: Category[];
+}
+
 export interface Product {
   id: number;
   sku: string;

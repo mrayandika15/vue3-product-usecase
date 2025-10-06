@@ -1,0 +1,81 @@
+{
+  "meta": {
+    "code": 200,
+    "status": "success",
+    "message": "Daftar kategori."
+  },
+  "data": [
+    {
+      "id": 167,
+      "name": "Asinan",
+      "created_by": "TakeHome",
+      "updated_by": null
+    },
+    {
+      "id": 164,
+      "name": "Buah-buahan",
+      "created_by": "TakeHome",
+      "updated_by": null
+    },
+    {
+      "id": 165,
+      "name": "Dessert",
+      "created_by": "TakeHome",
+      "updated_by": null
+    },
+    {
+      "id": 166,
+      "name": "Fast Food",
+      "created_by": "TakeHome",
+      "updated_by": null
+    },
+    {
+      "id": 170,
+      "name": "Lauk Hewani",
+      "created_by": "TakeHome",
+      "updated_by": null
+    },
+    {
+      "id": 169,
+      "name": "Lauk Nabati",
+      "created_by": "TakeHome",
+      "updated_by": null
+    },
+    {
+      "id": 161,
+      "name": "Makanan",
+      "created_by": "TakeHome",
+      "updated_by": null
+    },
+    {
+      "id": 162,
+      "name": "Minuman",
+      "created_by": "TakeHome",
+      "updated_by": null
+    },
+    {
+      "id": 171,
+      "name": "Protein Bar",
+      "created_by": "TakeHome",
+      "updated_by": null
+    },
+    {
+      "id": 172,
+      "name": "Sample Category",
+      "created_by": "TakeHome",
+      "updated_by": null
+    },
+    {
+      "id": 168,
+      "name": "Sayur-sayuran",
+      "created_by": "TakeHome",
+      "updated_by": null
+    },
+    {
+      "id": 163,
+      "name": "Snack",
+      "created_by": "TakeHome",
+      "updated_by": null
+    }
+  ]
+}

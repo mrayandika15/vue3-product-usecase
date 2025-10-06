@@ -2,6 +2,12 @@ import { ProductService } from "@/services/productService";
 import type { Product, ProductQuery } from "@/types/product";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
+import {
+  type CacheEntry,
+  getCache,
+  setCache,
+  gcCache,
+} from "@/helpers/cache";
 
 export const useListProductStore = defineStore("product", () => {
   const currentPage = ref(1);
@@ -24,16 +30,14 @@ export const useListProductStore = defineStore("product", () => {
   const isLoading = ref(false);
   const error = ref<unknown | null>(null);
 
+
   // Simple in-store cache
   type MetaCounts = {
     activeCount: number;
     inactiveCount: number;
     count: number;
   };
-  type CacheEntry = { data: any | null; meta: MetaCounts; timestamp: number };
-  const STALE_TIME_MS = 5 * 60 * 1000; // 5 minutes
-  const GC_TIME_MS = 10 * 60 * 1000; // 10 minutes
-  const cache = ref<Record<string, CacheEntry>>({});
+  const cache = ref<Record<string, CacheEntry<{ data: any | null; meta: MetaCounts }>>>({});
 
   function createProductsQueryKey(
     page: number,
@@ -48,23 +52,8 @@ export const useListProductStore = defineStore("product", () => {
     ]);
   }
 
-  function getCache(key: string): CacheEntry | null {
-    const entry = cache.value[key];
-    if (!entry) return null;
-    const age = Date.now() - entry.timestamp;
-    if (age > STALE_TIME_MS) return null;
-    return entry;
-  }
-
-  function setCache(key: string, data: any | null, metaCounts: MetaCounts) {
-    cache.value[key] = { data, meta: metaCounts, timestamp: Date.now() };
-  }
-
-  function gcCache() {
-    const now = Date.now();
-    for (const k of Object.keys(cache.value)) {
-      if (now - cache.value[k].timestamp > GC_TIME_MS) delete cache.value[k];
-    }
+  function runGc() {
+    gcCache(cache.value);
   }
 
   async function initialFetchProduct() {
@@ -72,10 +61,10 @@ export const useListProductStore = defineStore("product", () => {
     error.value = null;
     try {
       const key = createProductsQueryKey(currentPage.value, filters.value);
-      const cached = getCache(key);
+      const cached = getCache(cache.value, key);
       if (cached) {
-        meta.value = cached.meta;
-        productsData.value = cached.data;
+        meta.value = cached.data.meta;
+        productsData.value = cached.data.data;
         return;
       }
 
@@ -93,17 +82,19 @@ export const useListProductStore = defineStore("product", () => {
       productsData.value = response?.data ?? null;
 
       // save to cache
-      setCache(key, productsData.value, meta.value);
+      setCache(cache.value, key, { data: productsData.value, meta: meta.value });
     } catch (err) {
       error.value = err;
     } finally {
       isLoading.value = false;
-      gcCache();
+      runGc();
     }
   }
 
+
   // Computed properties
   const products = computed<Product[]>(() => productsData.value?.data || []);
+
 
   const pagination = computed(() => ({
     currentPage: productsData.value?.current_page,
@@ -135,6 +126,7 @@ export const useListProductStore = defineStore("product", () => {
     initialFetchProduct();
   }
 
+
   return {
     // State
     filters,
@@ -152,5 +144,6 @@ export const useListProductStore = defineStore("product", () => {
     setPage,
     refetch,
     initialFetchProduct,
+    runGc,
   };
 });

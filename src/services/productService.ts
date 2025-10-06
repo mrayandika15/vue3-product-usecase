@@ -1,6 +1,10 @@
 import apiService from "@/services/apiService";
 import type { ApiResponse, ListPaginatedResponse } from "@/types/api";
-import type { Product, ProductQuery } from "@/types/product";
+import type {
+  Product,
+  ProductQuery,
+  CategoryListResponse,
+} from "@/types/product";
 
 export class ProductService {
   // Get products using POST request as specified
@@ -20,7 +24,7 @@ export class ProductService {
 
       // Using POST request to /product/item/list endpoint
       const response = await apiService.post<ListPaginatedResponse<Product>>(
-        "/product/item/list",
+        "/v2/management/product/item/list",
         requestData
       );
 
@@ -69,5 +73,20 @@ export class ProductService {
       }
       return product;
     });
+  }
+
+  // Get categories list (POST as per backend requirements)
+  static async getCategories(): Promise<CategoryListResponse> {
+    try {
+      // Using axios instance to shape response to CategoryListResponse
+      const axios = apiService.getAxiosInstance();
+      const response = await axios.post<CategoryListResponse>(
+        "/v1/management/product/item/category"
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      throw error;
+    }
   }
 }

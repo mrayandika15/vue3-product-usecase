@@ -48,6 +48,7 @@
         <div class="text-base font-medium">Organisasi Barang</div>
         <n-form-item label="Kategori Barang" path="kategori">
           <n-select
+            :loading="categoryStore.isLoading"
             v-model:value="model.kategori"
             :options="categoryOptions"
             placeholder="Contoh: Makanan, Handphone"
@@ -65,7 +66,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed, onMounted } from "vue";
 import ImageUpload from "@/components/ui/ImageUpload.vue";
 import {
   NFormItem,
@@ -77,6 +78,7 @@ import {
 } from "naive-ui";
 
 import type { ProductCreateFormModel } from "@/types/product";
+import { useCategoryStore } from "@/stores/categoryStore";
 
 const props = defineProps<{
   model: Pick<
@@ -87,12 +89,18 @@ const props = defineProps<{
 
 const expandedNames = ref<string[]>([]);
 
-const categoryOptions = [
-  { label: "Makanan", value: 1 },
-  { label: "Handphone", value: 2 },
-  { label: "Minuman", value: 3 },
-  { label: "Lainnya", value: 4 },
-];
+const categoryStore = useCategoryStore();
+
+onMounted(() => {
+  // Fetch categories if not cached yet
+  if (!categoryStore.categories.length) {
+    categoryStore.initialFetchCategories();
+  }
+});
+
+const categoryOptions = computed(() =>
+  categoryStore.categories.map((c) => ({ label: c.name, value: c.id }))
+);
 </script>
 
 <style scoped>

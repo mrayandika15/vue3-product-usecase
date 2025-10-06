@@ -146,10 +146,9 @@ export class ProductService {
   static async deleteProduct(item: number) {
     try {
       const axios = apiService.getAxiosInstance();
-      const response = await axios.post(
-        "/v2/management/product/item/delete",
-        { item }
-      );
+      const response = await axios.post("/v2/management/product/item/delete", {
+        item,
+      });
       return response.data;
     } catch (error) {
       console.error("Error deleting product:", error);
@@ -158,7 +157,10 @@ export class ProductService {
   }
 
   // Change item status (POST: { id_barang, status: "ON" | "OFF" })
-  static async changeItemStatus(id_barang: number, status: "ON" | "OFF") {
+  static async changeItemStatus(
+    id_barang: number | string,
+    status: "ON" | "OFF"
+  ) {
     try {
       const axios = apiService.getAxiosInstance();
       const response = await axios.post(

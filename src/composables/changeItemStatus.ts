@@ -44,10 +44,34 @@ export function useChangeItemStatus() {
     }
   }
 
+  // Bulk change using pipe-delimited ids: "1|2|3"
+  async function changeStatusBulk(ids: number[], status: ItemStatus) {
+    if (!ids || ids.length === 0) return null;
+    isChanging.value = true;
+    error.value = null;
+    result.value = null;
+
+    try {
+      const id_barang = ids.join("|");
+      const response = await ProductService.changeItemStatus(id_barang, status);
+      result.value = response ?? null;
+
+      // Invalidate list cache; detail invalidation not needed for bulk
+      listStore.invalidateCacheForCurrentFilters?.();
+      return response;
+    } catch (err) {
+      error.value = err;
+      throw err;
+    } finally {
+      isChanging.value = false;
+    }
+  }
+
   return {
     isChanging,
     error,
     result,
     changeStatus,
+    changeStatusBulk,
   };
 }

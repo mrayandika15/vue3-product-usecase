@@ -51,7 +51,7 @@ import { NCard, useMessage } from "naive-ui";
 import router from "@/router";
 
 const productStore = useListProductStore();
-const { changeStatus } = useChangeItemStatus();
+const { changeStatus, changeStatusBulk } = useChangeItemStatus();
 const message = useMessage();
 const selectedItems = ref<number[]>([]);
 
@@ -111,16 +111,44 @@ function handleSelectionChange(ids: number[]) {
 
 function handleBulkActivate() {
   if (!selectedItems.value.length) return;
-  message.info(`${selectedItems.value.length} produk akan diaktifkan (belum diimplementasi).`, {
-    duration: 2500,
-  });
+  (async () => {
+    try {
+      await changeStatusBulk(selectedItems.value, "ON");
+      await productStore.refetch();
+      message.success(
+        `${selectedItems.value.length} produk berhasil diaktifkan.`,
+        { duration: 2500 }
+      );
+    } catch (err) {
+      const msg =
+        typeof (err as any)?.message === "string"
+          ? (err as any).message
+          : "Gagal mengaktifkan produk.";
+      message.error(msg, { duration: 3000 });
+      await productStore.refetch();
+    }
+  })();
 }
 
 function handleBulkDeactivate() {
   if (!selectedItems.value.length) return;
-  message.info(`${selectedItems.value.length} produk akan dinonaktifkan (belum diimplementasi).`, {
-    duration: 2500,
-  });
+  (async () => {
+    try {
+      await changeStatusBulk(selectedItems.value, "OFF");
+      await productStore.refetch();
+      message.success(
+        `${selectedItems.value.length} produk berhasil dinonaktifkan.`,
+        { duration: 2500 }
+      );
+    } catch (err) {
+      const msg =
+        typeof (err as any)?.message === "string"
+          ? (err as any).message
+          : "Gagal menonaktifkan produk.";
+      message.error(msg, { duration: 3000 });
+      await productStore.refetch();
+    }
+  })();
 }
 
 // Toggle ON/OFF status for a product item

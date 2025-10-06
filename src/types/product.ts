@@ -102,6 +102,7 @@ export interface ProductCreateRequest {
   unit: string; // required|min:1|max:20
   deskripsi: string | null; // nullable
   has_variant: boolean; // required (default false)
+  barcode: null;
   has_addon: boolean; // required (true if add_on exists)
   as_addon: boolean; // required (default false)
   add_on: AddOnItem[] | null; // nullable|array
@@ -110,4 +111,10 @@ export interface ProductCreateRequest {
 // Form model used in UI (extends request with local-only fields)
 export interface ProductCreateFormModel extends ProductCreateRequest {
   file: File | null; // local image upload, not part of payload
+}
+
+// Submit payload shape before FormData transformation
+export interface ProductCreateSubmitPayload {
+  data_barang: ProductCreateRequest;
+  gambar: File | string; // image file preferred; string fallback only if API allows
 }

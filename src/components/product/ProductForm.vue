@@ -41,8 +41,13 @@ const rules: FormRules = {
   },
   kategori: {
     required: true,
+    validator: (_rule, value: number | null) => {
+      return (
+        value !== null && typeof value === "number" && !Number.isNaN(value)
+      );
+    },
     message: "Kategori Barang wajib diisi",
-    trigger: ["change", "blur"],
+    trigger: ["change", "blur", "input"],
   },
   sku: {
     required: true,
@@ -65,8 +70,12 @@ const rules: FormRules = {
 };
 
 const handleSubmit = async () => {
-  const errors = await formRef.value?.validate();
-  if (!errors) emit("submit", props.model);
+  try {
+    await formRef.value?.validate();
+    emit("submit", props.model);
+  } catch (_err) {
+    // Validation errors are shown by Naive UI; no further action needed here
+  }
 };
 
 // Add-on interactions are handled inside AddOnsForm; ProductForm only passes model

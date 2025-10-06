@@ -104,4 +104,22 @@ export class ProductService {
       throw error;
     }
   }
+
+  // Create product with FormData payload (data_barang JSON string + gambar text)
+  static async createProduct(formData: FormData) {
+    try {
+      const axios = apiService.getAxiosInstance();
+      const response = await axios.post(
+        "/v2/management/product/item/add",
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error creating product:", error);
+      throw error;
+    }
+  }
 }

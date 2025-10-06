@@ -35,7 +35,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { AddOutline as AddIcon } from "@vicons/ionicons5";
 import { useListProductStore } from "@/stores/listProductStore";
 import { useChangeItemStatus } from "@/composables/changeItemStatus";
@@ -43,11 +43,12 @@ import { useChangeItemStatus } from "@/composables/changeItemStatus";
 import DataTable from "@/components/ui/DataTable.vue";
 import BaseButton from "@/components/ui/BaseButton.vue";
 import ProductFilters from "@/components/product/ProductFilters.vue";
-import { NCard } from "naive-ui";
+import { NCard, useMessage } from "naive-ui";
 import router from "@/router";
 
 const productStore = useListProductStore();
 const { changeStatus } = useChangeItemStatus();
+const message = useMessage();
 
 // Local state for filters
 const activeTab = ref<string>("all");
@@ -56,6 +57,16 @@ const pageCount = ref<number>(productStore.filters.page_count);
 
 onMounted(async () => {
   productStore.initialFetchProduct();
+});
+
+// Surface store errors via Naive UI toast
+watch(productStore.error, (err) => {
+  if (!err) return;
+  const msg =
+    typeof (err as any)?.message === "string"
+      ? (err as any).message
+      : "Terjadi kesalahan saat memuat daftar produk.";
+  message.error(msg, { duration: 3000 });
 });
 
 function handleAddProduct() {
@@ -96,11 +107,22 @@ async function handleToggleStatus(id: number, value: boolean) {
     await changeStatus(id, status);
     // Refetch list to reflect latest server state
     await productStore.refetch();
+    message.success(
+      `Status barang berhasil diubah ke ${
+        status === "ON" ? "Aktif" : "Nonaktif"
+      }.`,
+      { duration: 2500 }
+    );
   } catch (err) {
     console.error("Failed to change status", err);
     // Optional: show a toast/notification here
     // Ensure list stays consistent with server
     await productStore.refetch();
+    const msg =
+      typeof (err as any)?.message === "string"
+        ? (err as any).message
+        : "Gagal mengubah status barang.";
+    message.error(msg, { duration: 3000 });
   }
 }
 </script>

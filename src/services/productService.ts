@@ -5,6 +5,7 @@ import type {
   ProductQuery,
   CategoryListResponse,
   AddOnListResponse,
+  ProductDetailResponse,
 } from "@/types/product";
 
 export class ProductService {
@@ -119,6 +120,38 @@ export class ProductService {
       return response.data;
     } catch (error) {
       console.error("Error creating product:", error);
+      throw error;
+    }
+  }
+
+  // Delete product by item id (POST: { item })
+  static async deleteProduct(item: number) {
+    try {
+      const axios = apiService.getAxiosInstance();
+      const response = await axios.post(
+        "/v2/management/product/item/delete",
+        { item }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      throw error;
+    }
+  }
+
+  // Get single product detail (POST: id_barang)
+  static async getProductDetail(
+    id_barang: number
+  ): Promise<ProductDetailResponse> {
+    try {
+      const axios = apiService.getAxiosInstance();
+      const response = await axios.post<ProductDetailResponse>(
+        "/v2/management/product/item/detail",
+        { id_barang }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching product detail:", error);
       throw error;
     }
   }

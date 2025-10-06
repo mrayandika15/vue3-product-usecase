@@ -66,6 +66,65 @@ export interface Product {
   isVariant?: boolean;
 }
 
+// Detail response specific types (matches DETAIL_PRODUCT_RESPONSE.json)
+export interface AddOnGroup {
+  id: number;
+  identifier: string;
+  name: string;
+  is_active: number;
+  updated_at: string;
+  add_on_item_count: number;
+}
+
+export interface ProductAddOnLink {
+  id: number;
+  product_item_id: number;
+  product_item_add_on_group_id: number;
+  position: number;
+  is_active: number;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+  add_on_group: AddOnGroup;
+}
+
+export interface ProductDetail {
+  id: number;
+  sku: string;
+  barcode: string | null;
+  unit: string;
+  name: string;
+  description: string | null;
+  price: number;
+  discount: number;
+  price_discount: number;
+  is_active: number;
+  has_variant: number;
+  as_addon: number;
+  variant_status: string;
+  addon_status: string;
+  image: string | null;
+  total_sku: number;
+  status: string;
+  available_data: unknown | null;
+  created_by: string;
+  updated_at: string;
+  add_on_link: ProductAddOnLink[];
+  combines: unknown[];
+  variant_item: unknown[];
+  category: Category;
+  variant: unknown[];
+
+  // Optional UI helpers for consistency with Product
+  children?: Product[];
+  isVariant?: boolean;
+}
+
+export interface ProductDetailResponse {
+  meta: ApiMeta;
+  data: ProductDetail;
+}
+
 // UI State Types
 export interface ProductQuery {
   search: string;

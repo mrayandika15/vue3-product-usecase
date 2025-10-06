@@ -7,7 +7,13 @@
       <AddOnsForm :model="model" />
     </div>
   </n-form>
-  <FormAction :on-submit="handleSubmit" :on-cancel="() => emit('cancel')" />
+  <FormAction
+    :on-submit="handleSubmit"
+    :on-cancel="() => emit('cancel')"
+    :on-delete="() => emit('delete')"
+    :showDelete="showDelete"
+    :SubmitDisabled="isSubmitDisabled"
+  />
 </template>
 
 <script setup lang="ts">
@@ -17,16 +23,18 @@ import PriceForm from "@/components/product/forms/PriceForm.vue";
 import AddOnsForm from "@/components/product/forms/AddOnsForm.vue";
 import { NForm, type FormInst, type FormRules } from "naive-ui";
 import FormAction from "@/components/ui/FormAction.vue";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import type { ProductCreateFormModel } from "@/types/product";
 
 const props = defineProps<{
   model: ProductCreateFormModel;
+  showDelete?: boolean;
 }>();
 
 const emit = defineEmits<{
   (e: "submit", model: typeof props.model): void;
   (e: "cancel"): void;
+  (e: "delete"): void;
 }>();
 
 const formRef = ref<FormInst | null>(null);
@@ -68,6 +76,20 @@ const rules: FormRules = {
     trigger: ["input", "blur"],
   },
 };
+
+// Disable submit when validation is incomplete
+const isSubmitDisabled = computed(() => {
+  const m = props.model;
+  const hasNama =
+    typeof m.nama_barang === "string" && m.nama_barang.trim().length > 0;
+  const hasSku = typeof m.sku === "string" && m.sku.trim().length > 0;
+  const hasUnit = typeof m.unit === "string" && m.unit.trim().length > 0;
+  const validHarga = typeof m.harga === "number" && m.harga > 0;
+  const k = m.kategori as unknown as number | string | null;
+  const kNum = k === null ? NaN : typeof k === "number" ? k : Number(k);
+  const validKategori = !Number.isNaN(kNum);
+  return !(hasNama && hasSku && hasUnit && validHarga && validKategori);
+});
 
 const handleSubmit = async () => {
   try {

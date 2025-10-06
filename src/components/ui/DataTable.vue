@@ -54,6 +54,7 @@ import type {
 } from "naive-ui";
 import { NDataTable, NIcon, NSwitch, NTag } from "naive-ui";
 import { h, reactive, ref } from "vue";
+import { useRouter } from "vue-router";
 import EmptyState from "./EmptyState.vue";
 
 type DataTableThemeOverrides = NonNullable<DataTableProps["themeOverrides"]>;
@@ -95,6 +96,9 @@ const emit = defineEmits<{
 // Track expanded state for each row
 const expandedRows = ref<Set<number>>(new Set());
 
+// Router for navigation to edit page
+const router = useRouter();
+
 // Computed property to ensure reactivity
 
 const columns: DataTableColumns<Product> = [
@@ -128,11 +132,16 @@ const columns: DataTableColumns<Product> = [
           },
           [
             h(
-              "div",
+              "button",
               {
-                class: `font-medium text-gray-900 text-sm leading-5 ${
+                type: "button",
+                class: `font-medium text-main text-sm leading-5 hover:underline text-left ${
                   row.isVariant ? "text-gray-600 text-xs" : ""
                 }`,
+                onClick: (e: MouseEvent) => {
+                  e.stopPropagation();
+                  router.push({ name: "EditProduct", params: { id: row.id } });
+                },
               },
               row.name
             ),

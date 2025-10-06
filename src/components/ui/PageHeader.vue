@@ -1,8 +1,10 @@
 <template>
   <header
     :class="[
-      'sticky top-0 z-30',
-      isScrolled ? 'bg-white shadow-sm' : 'bg-transparent',
+      'sticky top-0 z-30 w-full',
+      isScrolled
+        ? 'bg-white w-full fixed top-0 left-0 shadow-sm'
+        : 'bg-transparent',
       'px-6 py-4',
     ]"
   >

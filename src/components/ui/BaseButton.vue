@@ -129,3 +129,5 @@ function handleClick(event: MouseEvent) {
   }
 }
 </script>
+
+<style scoped></style>

@@ -57,8 +57,8 @@ const selectedValue = ref<number | null>(null);
 
 // Store-backed options
 const addOnStore = useAddOnStore();
+
 onMounted(() => {
-  // Fetch add-ons once; cache helper avoids unnecessary requests
   addOnStore.initialFetchAddOns();
 });
 

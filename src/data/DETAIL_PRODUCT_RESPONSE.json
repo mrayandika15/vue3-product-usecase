@@ -1,0 +1,58 @@
+{
+  "meta": {
+    "code": 200,
+    "status": "success",
+    "message": "Detail barang."
+  },
+  "data": {
+    "id": 855,
+    "sku": "tb009",
+    "barcode": null,
+    "unit": "pte",
+    "name": "aa Tambah product edited",
+    "description": "tambah",
+    "price": 70000,
+    "discount": 0,
+    "price_discount": 0,
+    "is_active": 1,
+    "has_variant": 0,
+    "as_addon": 0,
+    "variant_status": "INACTIVE",
+    "addon_status": "INACTIVE",
+    "image": "business/products/items/17597265771072927.png",
+    "total_sku": 1,
+    "status": "ACTIVE",
+    "available_data": null,
+    "created_by": "TakeHome",
+    "updated_at": "2025-10-06T05:01:27.000000Z",
+    "add_on_link": [
+      {
+        "id": 283,
+        "product_item_id": 855,
+        "product_item_add_on_group_id": 40,
+        "position": 1,
+        "is_active": 1,
+        "created_by": "TakeHome",
+        "created_at": "2025-10-06T04:56:17.000000Z",
+        "updated_at": "2025-10-06T05:02:33.000000Z",
+        "add_on_group": {
+          "id": 40,
+          "identifier": "Sauce12",
+          "name": "Sauce",
+          "is_active": 1,
+          "updated_at": "2025-07-22T06:44:20.000000Z",
+          "add_on_item_count": 2
+        }
+      }
+    ],
+    "combines": [],
+    "variant_item": [],
+    "category": {
+      "id": 164,
+      "name": "Buah-buahan",
+      "created_by": "TakeHome",
+      "updated_by": null
+    },
+    "variant": []
+  }
+}

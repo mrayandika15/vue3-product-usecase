@@ -1,37 +1,41 @@
 <template>
-  <n-card>
-    <div class="space-y-2">
-      <div class="text-base font-medium">Add On</div>
-      <div class="text-xs text-gray-500">Tambahkan Add On pada barang Anda</div>
-
-      <n-form-item label="Pilih Add On" path="addOn">
-        <div class="flex w-full items-center gap-3">
-          <n-select
-            v-model:value="selectedValue"
-            :options="options"
-            :loading="addOnStore.isLoading"
-            placeholder="-- Pilih Add On --"
-            class="flex-1"
-            clearable
-          />
-          <n-button type="primary" ghost @click="onAdd"> + Tambah </n-button>
+  <div class="pb-12">
+    <n-card>
+      <div class="space-y-2">
+        <div class="text-base font-medium">Add On</div>
+        <div class="text-xs text-gray-500">
+          Tambahkan Add On pada barang Anda
         </div>
-      </n-form-item>
 
-      <!-- Table of selected add-ons -->
-      <div class="mt-4" v-if="hasTableData">
-        <n-data-table
-          :columns="columns"
-          :data="tableData"
-          :bordered="false"
-          :bottom-bordered="false"
-          :single-line="false"
-          size="medium"
-          :row-key="rowKey"
-        />
+        <n-form-item label="Pilih Add On" path="addOn">
+          <div class="flex w-full items-center gap-3">
+            <n-select
+              v-model:value="selectedValue"
+              :options="options"
+              :loading="addOnStore.isLoading"
+              placeholder="-- Pilih Add On --"
+              class="flex-1"
+              clearable
+            />
+            <n-button type="primary" ghost @click="onAdd"> + Tambah </n-button>
+          </div>
+        </n-form-item>
+
+        <!-- Table of selected add-ons -->
+        <div class="mt-4" v-if="hasTableData">
+          <n-data-table
+            :columns="columns"
+            :data="tableData"
+            :bordered="false"
+            :bottom-bordered="false"
+            :single-line="false"
+            size="medium"
+            :row-key="rowKey"
+          />
+        </div>
       </div>
-    </div>
-  </n-card>
+    </n-card>
+  </div>
 </template>
 
 <script setup lang="ts">

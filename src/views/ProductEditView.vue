@@ -1,62 +1,63 @@
 <template>
-  <div class="mx-auto p-6 space-y-6" style="background-color: #fafafa">
+  <div style="background-color: #fafafa">
     <PageHeader :title="model.nama_barang || 'Edit Barang'" to="/" />
+    <div class="mx-auto p-6 space-y-6">
+      <ProductForm
+        :model="model"
+        :show-delete="true"
+        @delete="handleDeleteClick"
+        @submit="handleFormSubmit"
+        @cancel="router.back()"
+      />
 
-    <ProductForm
-      :model="model"
-      :show-delete="true"
-      @delete="handleDeleteClick"
-      @submit="handleFormSubmit"
-      @cancel="router.back()"
-    />
-
-    <!-- Confirmation dialog before submitting (Edit) -->
-    <n-modal
-      :show="showConfirm"
-      preset="dialog"
-      title="Konfirmasi"
-      :mask-closable="false"
-      :closable="false"
-    >
-      <div class="space-y-4">
-        <p>Apakah Anda yakin ingin menyimpan perubahan barang ini?</p>
-        <div class="flex justify-end gap-2">
-          <n-button quaternary @click="cancelConfirm" :disabled="isSubmitting"
-            >Batal</n-button
-          >
-          <n-button
-            type="primary"
-            @click="confirmSubmit"
-            :loading="isSubmitting"
-            >OK</n-button
-          >
+      <!-- Confirmation dialog before submitting (Edit) -->
+      <n-modal
+        :show="showConfirm"
+        preset="dialog"
+        title="Konfirmasi"
+        :mask-closable="false"
+        :closable="false"
+      >
+        <div class="space-y-4">
+          <p>Apakah Anda yakin ingin menyimpan perubahan barang ini?</p>
+          <div class="flex justify-end gap-2">
+            <n-button quaternary @click="cancelConfirm" :disabled="isSubmitting"
+              >Batal</n-button
+            >
+            <n-button
+              type="primary"
+              @click="confirmSubmit"
+              :loading="isSubmitting"
+              >OK</n-button
+            >
+          </div>
         </div>
-      </div>
-    </n-modal>
+      </n-modal>
 
-    <!-- Delete confirmation dialog (Edit only) -->
-    <n-modal
-      :show="showDeleteConfirm"
-      preset="dialog"
-      title="Hapus Barang"
-      :mask-closable="false"
-      :closable="false"
-    >
-      <div class="space-y-4">
-        <p>
-          Apakah Anda yakin ingin menghapus barang ini? Tindakan ini tidak dapat
-          dibatalkan.
-        </p>
-        <div class="flex justify-end gap-2">
-          <n-button quaternary @click="cancelDelete" :disabled="isDeleting"
-            >Batal</n-button
-          >
-          <n-button type="error" @click="confirmDelete" :loading="isDeleting"
-            >Hapus</n-button
-          >
+      <!-- Delete confirmation dialog (Edit only) -->
+      <n-modal
+        :show="showDeleteConfirm"
+        preset="dialog"
+        title="Hapus Barang"
+        :mask-closable="false"
+        :closable="false"
+      >
+        <div class="space-y-4">
+          <p>
+            Apakah Anda yakin ingin menghapus barang ini? Tindakan ini tidak
+            dapat dibatalkan.
+          </p>
+          <div class="flex justify-end gap-2">
+            <n-button quaternary @click="cancelDelete" :disabled="isDeleting"
+              >Batal</n-button
+            >
+            <n-button type="error" @click="confirmDelete" :loading="isDeleting"
+              >Hapus</n-button
+            >
+          </div>
         </div>
-      </div>
-    </n-modal>
+      </n-modal>
+    </div>
   </div>
 </template>
 

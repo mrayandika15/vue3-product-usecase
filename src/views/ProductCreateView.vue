@@ -1,36 +1,37 @@
 <template>
-  <div class="mx-auto p-6 space-y-6" style="background-color: #fafafa">
+  <div style="background-color: #fafafa">
     <PageHeader title="Tambah Barang Baru" to="/" />
+    <div class="w-full p-6 space-y-6">
+      <ProductForm
+        :model="model"
+        @submit="handleFormSubmit"
+        @cancel="router.back()"
+      />
 
-    <ProductForm
-      :model="model"
-      @submit="handleFormSubmit"
-      @cancel="router.back()"
-    />
-
-    <!-- Confirmation dialog before submitting -->
-    <n-modal
-      :show="showConfirm"
-      preset="dialog"
-      title="Konfirmasi"
-      :mask-closable="false"
-      :closable="false"
-    >
-      <div class="space-y-4">
-        <p>Apakah Anda yakin ingin menyimpan barang ini?</p>
-        <div class="flex justify-end gap-2">
-          <n-button quaternary @click="cancelConfirm" :disabled="isSubmitting"
-            >Batal</n-button
-          >
-          <n-button
-            type="primary"
-            @click="confirmSubmit"
-            :loading="isSubmitting"
-            >OK</n-button
-          >
+      <!-- Confirmation dialog before submitting -->
+      <n-modal
+        :show="showConfirm"
+        preset="dialog"
+        title="Konfirmasi"
+        :mask-closable="false"
+        :closable="false"
+      >
+        <div class="space-y-4">
+          <p>Apakah Anda yakin ingin menyimpan barang ini?</p>
+          <div class="flex justify-end gap-2">
+            <n-button quaternary @click="cancelConfirm" :disabled="isSubmitting"
+              >Batal</n-button
+            >
+            <n-button
+              type="primary"
+              @click="confirmSubmit"
+              :loading="isSubmitting"
+              >OK</n-button
+            >
+          </div>
         </div>
-      </div>
-    </n-modal>
+      </n-modal>
+    </div>
   </div>
 </template>
 

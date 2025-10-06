@@ -87,15 +87,27 @@ onMounted(() => {
   addOnStore.initialFetchAddOns();
 });
 
-const options = computed(() =>
-  (addOnStore.addOns ?? []).map((item) => ({
-    label: item.name,
-    value: item.id,
-  }))
-);
+// Map of all add-ons for rendering existing selections
+const allAddOns = computed(() => addOnStore.addOns ?? []);
 const optionMap = computed<Record<number, string>>(() => {
-  return Object.fromEntries(options.value.map((o) => [o.value, o.label]));
+  return Object.fromEntries(
+    allAddOns.value.map((item) => [item.id, item.name])
+  );
 });
+
+// Exclude already selected add-ons from the selectable options
+const selectedIds = computed<Set<number>>(() => {
+  const ids = (props.model.add_on ?? [])
+    .map((i) => i.id)
+    .filter((id): id is number => typeof id === "number");
+  return new Set(ids);
+});
+
+const options = computed(() =>
+  allAddOns.value
+    .filter((item) => !selectedIds.value.has(item.id))
+    .map((item) => ({ label: item.name, value: item.id }))
+);
 
 function onAdd() {
   if (countAddOns.value >= MAX_ADDONS) {

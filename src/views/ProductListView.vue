@@ -27,6 +27,7 @@
           :per-page="productStore.pagination.perPage"
           @page-change="handlePageChange"
           @empty-action="handleAddProduct"
+          @toggle-status="handleToggleStatus"
         />
       </n-card>
     </main>
@@ -37,6 +38,7 @@
 import { onMounted, ref } from "vue";
 import { AddOutline as AddIcon } from "@vicons/ionicons5";
 import { useListProductStore } from "@/stores/listProductStore";
+import { useChangeItemStatus } from "@/composables/changeItemStatus";
 
 import DataTable from "@/components/ui/DataTable.vue";
 import BaseButton from "@/components/ui/BaseButton.vue";
@@ -45,6 +47,7 @@ import { NCard } from "naive-ui";
 import router from "@/router";
 
 const productStore = useListProductStore();
+const { changeStatus } = useChangeItemStatus();
 
 // Local state for filters
 const activeTab = ref<string>("all");
@@ -84,5 +87,20 @@ function handleTabChange(tab: string) {
   });
   productStore.setPage(1);
   productStore.refetch();
+}
+
+// Toggle ON/OFF status for a product item
+async function handleToggleStatus(id: number, value: boolean) {
+  const status = value ? "ON" : "OFF";
+  try {
+    await changeStatus(id, status);
+    // Refetch list to reflect latest server state
+    await productStore.refetch();
+  } catch (err) {
+    console.error("Failed to change status", err);
+    // Optional: show a toast/notification here
+    // Ensure list stays consistent with server
+    await productStore.refetch();
+  }
 }
 </script>

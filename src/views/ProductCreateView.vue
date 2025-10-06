@@ -38,7 +38,7 @@
 <script setup lang="ts">
 import ProductForm from "@/components/product/ProductForm.vue";
 import PageHeader from "@/components/ui/PageHeader.vue";
-import { useMessage, NModal, NSpin, NButton } from "naive-ui";
+import { useMessage, NModal, NButton } from "naive-ui";
 import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import type { ProductCreateFormModel } from "@/types/product";
@@ -55,6 +55,7 @@ const model = reactive<ProductCreateFormModel>({
   unit: "",
   deskripsi: "",
   has_variant: false,
+  barcode: null,
   has_addon: false,
   as_addon: false,
   add_on: [],

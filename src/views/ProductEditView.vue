@@ -70,7 +70,6 @@ import { useRouter, useRoute } from "vue-router";
 import type { ProductEditFormModel } from "@/types/product";
 import { useDetailProductStore } from "@/stores/detailProductStore";
 import { useDeleteProduct } from "@/composables/deleteProduct";
-import { useListProductStore } from "@/stores/listProductStore";
 import { useEditProduct } from "@/composables/editProducts";
 
 const router = useRouter();
@@ -87,6 +86,7 @@ const model = reactive<ProductEditFormModel>({
   unit: "",
   deskripsi: "",
   has_variant: false,
+  barcode: null,
   has_addon: false,
   as_addon: false,
   variant_remake: false,

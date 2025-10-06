@@ -29,7 +29,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
 
-const props = defineProps<{ title: string; to?: string }>();
+defineProps<{ title: string; to?: string }>();
 
 const isScrolled = ref(false);
 const onScroll = () => {

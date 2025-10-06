@@ -55,7 +55,7 @@ import type {
   PaginationProps,
 } from "naive-ui";
 import { NDataTable, NIcon, NSwitch, NTag } from "naive-ui";
-import { h, reactive, ref, watch, computed } from "vue";
+import { h, ref, watch, computed } from "vue";
 import { useRouter } from "vue-router";
 import EmptyState from "./EmptyState.vue";
 
@@ -88,7 +88,7 @@ const props = withDefaults(defineProps<Props>(), {
   totalPages: 1,
   totalItems: 0,
   perPage: 10,
-  checkedKeys: [] as number[],
+  checkedKeys: (_props) => [] as number[],
 });
 
 const emit = defineEmits<{

@@ -66,7 +66,7 @@ onMounted(async () => {
 });
 
 // Surface store errors via Naive UI toast
-watch(productStore.error, (err) => {
+watch(() => productStore.error, (err) => {
   if (!err) return;
   const msg =
     typeof (err as any)?.message === "string"

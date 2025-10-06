@@ -24,7 +24,7 @@
 import { NFormItem, NInput, NCard } from "naive-ui";
 import type { ProductCreateFormModel } from "@/types/product";
 
-const props = defineProps<{
+defineProps<{
   model: Pick<ProductCreateFormModel, "sku" | "unit">;
 }>();
 </script>

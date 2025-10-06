@@ -80,7 +80,7 @@ import {
 import type { ProductCreateFormModel } from "@/types/product";
 import { useCategoryStore } from "@/stores/categoryStore";
 
-const props = defineProps<{
+defineProps<{
   model: Pick<
     ProductCreateFormModel,
     "nama_barang" | "deskripsi" | "kategori" | "file"

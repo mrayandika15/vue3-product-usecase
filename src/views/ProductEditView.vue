@@ -69,6 +69,7 @@ import { useRouter, useRoute } from "vue-router";
 import type { ProductCreateFormModel } from "@/types/product";
 import { useDetailProductStore } from "@/stores/detailProductStore";
 import { useDeleteProduct } from "@/composables/deleteProduct";
+import { useListProductStore } from "@/stores/listProductStore";
 
 const router = useRouter();
 const route = useRoute();
@@ -131,6 +132,7 @@ const isSubmitting = ref(false); // local submitting for edit flow until API is 
 // Delete state
 const showDeleteConfirm = ref(false);
 const { isDeleting, deleteItem } = useDeleteProduct();
+const { refetch: refetchList } = useListProductStore();
 
 // Trigger confirmation first
 const handleFormSubmit = (submittedModel: ProductCreateFormModel) => {
@@ -176,6 +178,7 @@ const confirmDelete = async () => {
     await deleteItem(idParam);
     message.success("Barang berhasil dihapus");
     showDeleteConfirm.value = false;
+    refetchList();
     router.push("/");
   } catch (err) {
     const msg = (err as any)?.message || "Gagal menghapus barang";

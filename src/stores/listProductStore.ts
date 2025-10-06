@@ -1,13 +1,14 @@
+import {
+  type CacheEntry,
+  gcCache,
+  getCache,
+  invalidateCache,
+  setCache,
+} from "@/helpers/cache";
 import { ProductService } from "@/services/productService";
 import type { Product, ProductQuery } from "@/types/product";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
-import {
-  type CacheEntry,
-  getCache,
-  setCache,
-  gcCache,
-} from "@/helpers/cache";
 
 export const useListProductStore = defineStore("product", () => {
   const currentPage = ref(1);
@@ -30,14 +31,15 @@ export const useListProductStore = defineStore("product", () => {
   const isLoading = ref(false);
   const error = ref<unknown | null>(null);
 
-
   // Simple in-store cache
   type MetaCounts = {
     activeCount: number;
     inactiveCount: number;
     count: number;
   };
-  const cache = ref<Record<string, CacheEntry<{ data: any | null; meta: MetaCounts }>>>({});
+  const cache = ref<
+    Record<string, CacheEntry<{ data: any | null; meta: MetaCounts }>>
+  >({});
 
   function createProductsQueryKey(
     page: number,
@@ -82,7 +84,10 @@ export const useListProductStore = defineStore("product", () => {
       productsData.value = response?.data ?? null;
 
       // save to cache
-      setCache(cache.value, key, { data: productsData.value, meta: meta.value });
+      setCache(cache.value, key, {
+        data: productsData.value,
+        meta: meta.value,
+      });
     } catch (err) {
       error.value = err;
     } finally {
@@ -91,10 +96,8 @@ export const useListProductStore = defineStore("product", () => {
     }
   }
 
-
   // Computed properties
   const products = computed<Product[]>(() => productsData.value?.data || []);
-
 
   const pagination = computed(() => ({
     currentPage: productsData.value?.current_page,
@@ -123,9 +126,11 @@ export const useListProductStore = defineStore("product", () => {
   // Invalidate and refetch products (traditional Pinia way)
 
   function refetch() {
+    const key = createProductsQueryKey(currentPage.value, filters.value);
+
+    invalidateCache(cache.value, key);
     initialFetchProduct();
   }
-
 
   return {
     // State

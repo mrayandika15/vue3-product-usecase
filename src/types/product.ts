@@ -148,8 +148,13 @@ export interface ProductState {
 
 // Create / Form Request Types
 export interface AddOnItem {
-  id: number | null; // nullable numeric id
-  is_active: boolean | null; // nullable boolean status
+  id: number | null; // UI-selected add-on group id
+  is_active: boolean | null; // active flag
+  // Edit API-specific fields (optional for UI, populated in edit flow)
+  id_add_on_group?: number | null; // required when status 'A'
+  id_add_on_link?: number | null; // required when status 'E'|'N'|'D'
+  status?: "D" | "E" | "A" | "N"; // operation flag
+  position?: number | null; // unique order among add-ons
 }
 
 // Payload shape expected by backend for product creation
@@ -176,4 +181,27 @@ export interface ProductCreateFormModel extends ProductCreateRequest {
 export interface ProductCreateSubmitPayload {
   data_barang: ProductCreateRequest;
   gambar: File | string; // image file preferred; string fallback only if API allows
+}
+
+// Edit / Update Request Types
+export interface ProductEditRequest extends ProductCreateRequest {
+  id: number; // target product id
+  // Required variant flags for edit API
+  variant_remake: boolean; // required, default false
+  variant_clear: boolean; // required, default false
+  variant_change: boolean; // required, default false
+}
+
+// Form model used in Edit flow (adds id)
+export interface ProductEditFormModel extends ProductCreateFormModel {
+  id: number;
+  variant_remake: boolean;
+  variant_clear: boolean;
+  variant_change: boolean;
+}
+
+// Submit payload for edit before FormData transformation
+export interface ProductEditSubmitPayload {
+  data_barang: ProductEditRequest;
+  gambar?: File | string; // optional image for updates
 }

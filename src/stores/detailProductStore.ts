@@ -28,7 +28,9 @@ export const useDetailProductStore = defineStore("detailProduct", () => {
     gcCache(cache.value);
   }
 
-  async function fetchProductDetail(id_barang: number): Promise<ProductDetail | null> {
+  async function fetchProductDetail(
+    id_barang: number
+  ): Promise<ProductDetail | null> {
     currentId.value = id_barang;
     isLoading.value = true;
     error.value = null;
@@ -41,9 +43,8 @@ export const useDetailProductStore = defineStore("detailProduct", () => {
         return detail.value;
       }
 
-      const response: ProductDetailResponse = await ProductService.getProductDetail(
-        id_barang
-      );
+      const response: ProductDetailResponse =
+        await ProductService.getProductDetail(id_barang);
 
       detail.value = response?.data ?? null;
       if (detail.value) setCache(cache.value, key, detail.value);
@@ -61,6 +62,11 @@ export const useDetailProductStore = defineStore("detailProduct", () => {
     if (currentId.value == null) return null;
     invalidateCache(cache.value, createKey(currentId.value));
     return fetchProductDetail(currentId.value);
+  }
+
+  function invalidateCurrentCache(): void {
+    if (currentId.value == null) return;
+    invalidateCache(cache.value, createKey(currentId.value));
   }
 
   function reset(): void {
@@ -83,6 +89,7 @@ export const useDetailProductStore = defineStore("detailProduct", () => {
     // actions
     fetchProductDetail,
     refetch,
+    invalidateCurrentCache,
     reset,
     runGc,
   };

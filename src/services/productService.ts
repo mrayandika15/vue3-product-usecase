@@ -124,6 +124,24 @@ export class ProductService {
     }
   }
 
+  // Edit product with FormData payload (data_barang JSON string + optional gambar)
+  static async editProduct(formData: FormData) {
+    try {
+      const axios = apiService.getAxiosInstance();
+      const response = await axios.post(
+        "/v2/management/product/item/edit",
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error editing product:", error);
+      throw error;
+    }
+  }
+
   // Delete product by item id (POST: { item })
   static async deleteProduct(item: number) {
     try {

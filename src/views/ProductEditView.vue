@@ -66,17 +66,19 @@ import PageHeader from "@/components/ui/PageHeader.vue";
 import { useMessage, NModal, NButton } from "naive-ui";
 import { reactive, ref, onMounted, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import type { ProductCreateFormModel } from "@/types/product";
+import type { ProductEditFormModel } from "@/types/product";
 import { useDetailProductStore } from "@/stores/detailProductStore";
 import { useDeleteProduct } from "@/composables/deleteProduct";
 import { useListProductStore } from "@/stores/listProductStore";
+import { useEditProduct } from "@/composables/editProducts";
 
 const router = useRouter();
 const route = useRoute();
 const message = useMessage();
 const detailStore = useDetailProductStore();
 
-const model = reactive<ProductCreateFormModel>({
+const model = reactive<ProductEditFormModel>({
+  id: 0,
   nama_barang: "",
   sku: "",
   harga: 0,
@@ -86,6 +88,9 @@ const model = reactive<ProductCreateFormModel>({
   has_variant: false,
   has_addon: false,
   as_addon: false,
+  variant_remake: false,
+  variant_clear: false,
+  variant_change: false,
   add_on: [],
   file: null,
 });
@@ -94,6 +99,7 @@ const model = reactive<ProductCreateFormModel>({
 onMounted(async () => {
   const idParam = Number(route.params.id);
   if (Number.isFinite(idParam)) {
+    model.id = idParam;
     const data = await detailStore.fetchProductDetail(idParam);
     if (!data) {
       message.error("Gagal memuat detail barang");
@@ -120,6 +126,12 @@ watch(
     model.add_on = links.map((link) => ({
       id: link.add_on_group?.id ?? link.product_item_add_on_group_id ?? null,
       is_active: Boolean(link.is_active),
+      // populate fields needed by edit API
+      id_add_on_group:
+        link.add_on_group?.id ?? link.product_item_add_on_group_id ?? null,
+      id_add_on_link: link.id ?? null,
+      status: "E", // existing link by default
+      position: link.position ?? null,
     }));
   },
   { immediate: true }
@@ -127,16 +139,15 @@ watch(
 
 // Confirmation state
 const showConfirm = ref(false);
-const pendingModel = ref<ProductCreateFormModel | null>(null);
-const isSubmitting = ref(false); // local submitting for edit flow until API is added
+const pendingModel = ref<ProductEditFormModel | null>(null);
+const { isSubmitting, submit } = useEditProduct();
 // Delete state
 const showDeleteConfirm = ref(false);
 const { isDeleting, deleteItem } = useDeleteProduct();
-const { refetch: refetchList } = useListProductStore();
 
 // Trigger confirmation first
-const handleFormSubmit = (submittedModel: ProductCreateFormModel) => {
-  pendingModel.value = submittedModel;
+const handleFormSubmit = () => {
+  pendingModel.value = model;
   showConfirm.value = true;
 };
 
@@ -144,17 +155,13 @@ const handleFormSubmit = (submittedModel: ProductCreateFormModel) => {
 const confirmSubmit = async () => {
   if (!pendingModel.value) return;
   try {
-    isSubmitting.value = true;
-    // TODO: call updateProduct API when available
-    await new Promise((resolve) => setTimeout(resolve, 800));
+    await submit(model);
     message.success("Perubahan barang berhasil disimpan");
     showConfirm.value = false;
     router.push("/");
   } catch (err) {
     const msg = (err as any)?.message || "Gagal menyimpan perubahan barang";
     message.error(msg);
-  } finally {
-    isSubmitting.value = false;
   }
 };
 
@@ -178,7 +185,6 @@ const confirmDelete = async () => {
     await deleteItem(idParam);
     message.success("Barang berhasil dihapus");
     showDeleteConfirm.value = false;
-    refetchList();
     router.push("/");
   } catch (err) {
     const msg = (err as any)?.message || "Gagal menghapus barang";

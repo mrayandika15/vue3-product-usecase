@@ -126,11 +126,13 @@ export const useListProductStore = defineStore("product", () => {
   // Invalidate and refetch products (traditional Pinia way)
 
   function refetch() {
-    const key = createProductsQueryKey(currentPage.value, filters.value);
-
-    invalidateCache(cache.value, key);
     initialFetchProduct();
   }
+
+  const invalidateCacheForCurrentFilters = () => {
+    const key = createProductsQueryKey(currentPage.value, filters.value);
+    invalidateCache(cache.value, key);
+  };
 
   return {
     // State
@@ -150,5 +152,6 @@ export const useListProductStore = defineStore("product", () => {
     refetch,
     initialFetchProduct,
     runGc,
+    invalidateCacheForCurrentFilters,
   };
 });

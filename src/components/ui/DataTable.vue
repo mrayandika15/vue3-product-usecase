@@ -55,7 +55,7 @@ import type {
   PaginationProps,
 } from "naive-ui";
 import { NDataTable, NIcon, NSwitch, NTag } from "naive-ui";
-import { h, reactive, ref, watch } from "vue";
+import { h, reactive, ref, watch, computed } from "vue";
 import { useRouter } from "vue-router";
 import EmptyState from "./EmptyState.vue";
 
@@ -289,7 +289,7 @@ const columns: DataTableColumns<Product> = [
   },
 ];
 
-const paginationConfig: PaginationProps = reactive({
+const paginationConfig = computed<PaginationProps>(() => ({
   page: props.currentPage,
   pageSize: props.perPage,
   pageCount: props.totalPages,
@@ -298,7 +298,7 @@ const paginationConfig: PaginationProps = reactive({
   onUpdatePage: (page: number) => {
     emit("page-change", page);
   },
-});
+}));
 
 function onUpdateCheckedRowKeys(keys: Array<number | string>) {
   checkedRowKeys.value = keys.map((k) => Number(k));

@@ -1,0 +1,73 @@
+{
+  "meta": {
+    "code": 200,
+    "status": "success",
+    "message": "Daftar add on."
+  },
+  "data": [
+    {
+      "id": 38,
+      "identifier": "Cheese101",
+      "name": "Cheese",
+      "is_active": 1,
+      "updated_at": "2025-07-22T06:43:16.000000Z",
+      "add_on_item_count": 1
+    },
+    {
+      "id": 39,
+      "identifier": "Egg02",
+      "name": "Egg",
+      "is_active": 1,
+      "updated_at": "2025-07-22T06:43:54.000000Z",
+      "add_on_item_count": 2
+    },
+    {
+      "id": 40,
+      "identifier": "Sauce12",
+      "name": "Sauce",
+      "is_active": 1,
+      "updated_at": "2025-07-22T06:44:20.000000Z",
+      "add_on_item_count": 2
+    },
+    {
+      "id": 41,
+      "identifier": "Ve-234",
+      "name": "Sayuran Segar / Daun (Fresh Veggies)",
+      "is_active": 1,
+      "updated_at": "2025-07-22T06:45:03.000000Z",
+      "add_on_item_count": 3
+    },
+    {
+      "id": 42,
+      "identifier": "DA133",
+      "name": "Daging Tambahan (Extra Meat)",
+      "is_active": 1,
+      "updated_at": "2025-07-22T06:46:02.000000Z",
+      "add_on_item_count": 2
+    },
+    {
+      "id": 43,
+      "identifier": "SF-20",
+      "name": "Seafood",
+      "is_active": 1,
+      "updated_at": "2025-07-22T06:47:01.000000Z",
+      "add_on_item_count": 3
+    },
+    {
+      "id": 44,
+      "identifier": "CR-21",
+      "name": "Crunchy Topping",
+      "is_active": 1,
+      "updated_at": "2025-07-22T06:47:49.000000Z",
+      "add_on_item_count": 2
+    },
+    {
+      "id": 45,
+      "identifier": "PF23",
+      "name": "Powder Flavoring",
+      "is_active": 1,
+      "updated_at": "2025-07-22T06:48:09.000000Z",
+      "add_on_item_count": 1
+    }
+  ]
+}

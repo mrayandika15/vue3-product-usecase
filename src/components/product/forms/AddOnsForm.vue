@@ -9,6 +9,7 @@
           <n-select
             v-model:value="selectedValue"
             :options="options"
+            :loading="addOnStore.isLoading"
             placeholder="-- Pilih Add On --"
             class="flex-1"
             clearable
@@ -44,8 +45,9 @@ import {
   NSwitch,
   NSelect,
 } from "naive-ui";
-import { computed, h, ref } from "vue";
+import { computed, h, ref, onMounted } from "vue";
 import type { ProductCreateFormModel, AddOnItem } from "@/types/product";
+import { useAddOnStore } from "@/stores/addOnStore";
 
 const props = defineProps<{
   model: Pick<ProductCreateFormModel, "add_on" | "has_addon">;
@@ -53,12 +55,22 @@ const props = defineProps<{
 
 const selectedValue = ref<number | null>(null);
 
-const options = [
-  { label: "Garansi", value: 1 },
-  { label: "Asuransi", value: 2 },
-  { label: "Bungkus Kado", value: 3 },
-];
-const optionMap = Object.fromEntries(options.map((o) => [o.value, o.label]));
+// Store-backed options
+const addOnStore = useAddOnStore();
+onMounted(() => {
+  // Fetch add-ons once; cache helper avoids unnecessary requests
+  addOnStore.initialFetchAddOns();
+});
+
+const options = computed(() =>
+  (addOnStore.addOns ?? []).map((item) => ({
+    label: item.name,
+    value: item.id,
+  }))
+);
+const optionMap = computed<Record<number, string>>(() => {
+  return Object.fromEntries(options.value.map((o) => [o.value, o.label]));
+});
 
 function onAdd() {
   if (selectedValue.value == null) return;
@@ -93,7 +105,7 @@ const columns = [
       h(
         "div",
         { class: "py-2" },
-        row.id != null ? optionMap[row.id] ?? `AddOn #${row.id}` : "-"
+        row.id != null ? optionMap.value[row.id] ?? `AddOn #${row.id}` : "-"
       ),
   },
   {

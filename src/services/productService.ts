@@ -4,6 +4,7 @@ import type {
   Product,
   ProductQuery,
   CategoryListResponse,
+  AddOnListResponse,
 } from "@/types/product";
 
 export class ProductService {
@@ -86,6 +87,20 @@ export class ProductService {
       return response.data;
     } catch (error) {
       console.error("Error fetching categories:", error);
+      throw error;
+    }
+  }
+
+  // Get add-ons list (POST as per backend requirements)
+  static async getAddOns(): Promise<AddOnListResponse> {
+    try {
+      const axios = apiService.getAxiosInstance();
+      const response = await axios.post<AddOnListResponse>(
+        "/v2/management/product/item/addonlist"
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching add-ons:", error);
       throw error;
     }
   }

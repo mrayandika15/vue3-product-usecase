@@ -18,6 +18,22 @@ export interface CategoryListResponse {
   data: Category[];
 }
 
+// AddOn list item from ADDONS_RESPONSE.json
+export interface AddOnListItem {
+  id: number;
+  identifier: string;
+  name: string;
+  is_active: number;
+  updated_at: string;
+  add_on_item_count: number;
+}
+
+// AddOn API response shape (matches ADDONS_RESPONSE.json)
+export interface AddOnListResponse {
+  meta: ApiMeta;
+  data: AddOnListItem[];
+}
+
 export interface Product {
   id: number;
   sku: string;

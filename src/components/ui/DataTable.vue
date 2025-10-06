@@ -55,7 +55,7 @@ import type {
   PaginationProps,
 } from "naive-ui";
 import { NDataTable, NIcon, NSwitch, NTag } from "naive-ui";
-import { h, reactive, ref } from "vue";
+import { h, reactive, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import EmptyState from "./EmptyState.vue";
 
@@ -78,6 +78,8 @@ interface Props {
   showEmptyAction?: boolean;
   emptyActionText?: string;
   loading?: boolean;
+  // Controlled selection from parent (optional)
+  checkedKeys?: number[];
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -86,6 +88,7 @@ const props = withDefaults(defineProps<Props>(), {
   totalPages: 1,
   totalItems: 0,
   perPage: 10,
+  checkedKeys: [] as number[],
 });
 
 const emit = defineEmits<{
@@ -301,6 +304,23 @@ function onUpdateCheckedRowKeys(keys: Array<number | string>) {
   checkedRowKeys.value = keys.map((k) => Number(k));
   emit("selection-change", checkedRowKeys.value);
 }
+
+// Sync internal selection with parent-provided checkedKeys
+watch(
+  () => props.checkedKeys,
+  (newVal) => {
+    if (!Array.isArray(newVal)) return;
+    const normalized = newVal.map((k) => Number(k));
+    // Only update if different to avoid loops
+    const changed =
+      normalized.length !== checkedRowKeys.value.length ||
+      normalized.some((v, i) => v !== checkedRowKeys.value[i]);
+    if (changed) {
+      checkedRowKeys.value = normalized;
+    }
+  },
+  { immediate: true }
+);
 </script>
 
 <style scoped>

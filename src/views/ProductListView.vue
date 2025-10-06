@@ -28,6 +28,7 @@
           :total-pages="productStore.pagination.totalPages"
           :total-items="productStore.pagination.totalItems"
           :per-page="productStore.pagination.perPage"
+          :checked-keys="selectedItems"
           @page-change="handlePageChange"
           @empty-action="handleAddProduct"
           @selection-change="handleSelectionChange"
@@ -113,12 +114,14 @@ function handleBulkActivate() {
   if (!selectedItems.value.length) return;
   (async () => {
     try {
+      const count = selectedItems.value.length;
       await changeStatusBulk(selectedItems.value, "ON");
       await productStore.refetch();
-      message.success(
-        `${selectedItems.value.length} produk berhasil diaktifkan.`,
-        { duration: 2500 }
-      );
+      message.success(`${count} produk berhasil diaktifkan.`, {
+        duration: 2500,
+      });
+      // Clear selection after successful bulk action
+      selectedItems.value = [];
     } catch (err) {
       const msg =
         typeof (err as any)?.message === "string"
@@ -134,12 +137,14 @@ function handleBulkDeactivate() {
   if (!selectedItems.value.length) return;
   (async () => {
     try {
+      const count = selectedItems.value.length;
       await changeStatusBulk(selectedItems.value, "OFF");
       await productStore.refetch();
-      message.success(
-        `${selectedItems.value.length} produk berhasil dinonaktifkan.`,
-        { duration: 2500 }
-      );
+      message.success(`${count} produk berhasil dinonaktifkan.`, {
+        duration: 2500,
+      });
+      // Clear selection after successful bulk action
+      selectedItems.value = [];
     } catch (err) {
       const msg =
         typeof (err as any)?.message === "string"
@@ -164,6 +169,8 @@ async function handleToggleStatus(id: number, value: boolean) {
       }.`,
       { duration: 2500 }
     );
+    // Clear any current selection after single toggle success
+    selectedItems.value = [];
   } catch (err) {
     console.error("Failed to change status", err);
     // Optional: show a toast/notification here

@@ -55,6 +55,8 @@ interface Props {
   focusable?: boolean;
   keyboard?: boolean;
   block?: boolean;
+  // Custom additional class from parent
+  customClass?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -75,11 +77,14 @@ const props = withDefaults(defineProps<Props>(), {
   focusable: true,
   keyboard: true,
   block: false,
+  customClass: "",
 });
 
 const emit = defineEmits<{
   click: [event: MouseEvent];
 }>();
+
+const customClass = computed(() => props.customClass);
 
 const buttonColor = computed(() => {
   if (props.color) return props.color;
@@ -118,6 +123,11 @@ const buttonClass = computed(() => {
     classes.push("!border-2");
   } else if (props.variant === "ghost") {
     classes.push("!bg-transparent hover:!bg-gray-100");
+  }
+
+  // Append custom class if provided
+  if (typeof customClass.value === "string" && customClass.value.length > 0) {
+    classes.push(customClass.value);
   }
 
   return classes.join(" ");

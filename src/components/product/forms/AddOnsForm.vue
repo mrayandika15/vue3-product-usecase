@@ -24,18 +24,18 @@
               :options="options"
               :loading="addOnStore.isLoading"
               placeholder="-- Pilih Add On --"
-              class="flex-1"
+              class="flex-1 focus:!outline-none"
               clearable
               :disabled="countAddOns >= MAX_ADDONS"
             />
-            <n-button
+            <BaseButton
+              custom-class="!w-[100px]"
               type="primary"
-              ghost
               @click="onAdd"
               :disabled="countAddOns >= MAX_ADDONS"
             >
               + Tambah
-            </n-button>
+            </BaseButton>
           </div>
         </n-form-item>
 
@@ -71,6 +71,7 @@ import {
 import { computed, h, ref, onMounted } from "vue";
 import type { ProductCreateFormModel, AddOnItem } from "@/types/product";
 import { useAddOnStore } from "@/stores/addOnStore";
+import BaseButton from "@/components/ui/BaseButton.vue";
 
 const props = defineProps<{
   model: Pick<ProductCreateFormModel, "add_on" | "has_addon">;
@@ -87,27 +88,15 @@ onMounted(() => {
   addOnStore.initialFetchAddOns();
 });
 
-// Map of all add-ons for rendering existing selections
-const allAddOns = computed(() => addOnStore.addOns ?? []);
-const optionMap = computed<Record<number, string>>(() => {
-  return Object.fromEntries(
-    allAddOns.value.map((item) => [item.id, item.name])
-  );
-});
-
-// Exclude already selected add-ons from the selectable options
-const selectedIds = computed<Set<number>>(() => {
-  const ids = (props.model.add_on ?? [])
-    .map((i) => i.id)
-    .filter((id): id is number => typeof id === "number");
-  return new Set(ids);
-});
-
 const options = computed(() =>
-  allAddOns.value
-    .filter((item) => !selectedIds.value.has(item.id))
-    .map((item) => ({ label: item.name, value: item.id }))
+  (addOnStore.addOns ?? []).map((item) => ({
+    label: item.name,
+    value: item.id,
+  }))
 );
+const optionMap = computed<Record<number, string>>(() => {
+  return Object.fromEntries(options.value.map((o) => [o.value, o.label]));
+});
 
 function onAdd() {
   if (countAddOns.value >= MAX_ADDONS) {

@@ -1,11 +1,6 @@
 <template>
   <div class="mx-auto p-6 space-y-6" style="background-color: #fafafa">
-    <router-link to="/" class="text-gray-500 hover:text-gray-700">
-      <div class="flex items-center gap-2">
-        ←
-        <span class="text-lg font-semibold">Tambah Barang Baru</span>
-      </div>
-    </router-link>
+    <PageHeader title="Tambah Barang Baru" to="/" />
 
     <ProductForm
       :model="model"
@@ -17,6 +12,7 @@
 
 <script setup lang="ts">
 import ProductForm from "@/components/product/ProductForm.vue";
+import PageHeader from "@/components/ui/PageHeader.vue";
 import { useMessage } from "naive-ui";
 import { reactive } from "vue";
 import { useRouter } from "vue-router";

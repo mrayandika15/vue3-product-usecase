@@ -5,14 +5,9 @@
       <PriceForm :model="model" />
       <DetailForm :model="model" />
       <AddOnsForm :model="model" />
-
-      <!-- Actions -->
-      <div class="pt-2 flex justify-end gap-3">
-        <n-button tertiary @click="emit('cancel')">Batal</n-button>
-        <n-button type="primary" @click="handleSubmit">Simpan Barang</n-button>
-      </div>
     </div>
   </n-form>
+  <FormAction :on-submit="handleSubmit" :on-cancel="() => emit('cancel')" />
 </template>
 
 <script setup lang="ts">
@@ -20,7 +15,8 @@ import InfoForm from "@/components/product/forms/InfoForm.vue";
 import DetailForm from "@/components/product/forms/DetailForm.vue";
 import PriceForm from "@/components/product/forms/PriceForm.vue";
 import AddOnsForm from "@/components/product/forms/AddOnsForm.vue";
-import { NButton, NForm, type FormInst, type FormRules } from "naive-ui";
+import { NForm, type FormInst, type FormRules } from "naive-ui";
+import FormAction from "@/components/ui/FormAction.vue";
 import { ref } from "vue";
 import type { ProductCreateFormModel } from "@/types/product";
 

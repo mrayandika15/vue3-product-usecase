@@ -1,6 +1,6 @@
 <template>
   <n-card>
-    <div class="space-y-6">
+    <div>
       <!-- Info barang -->
       <div class="space-y-4">
         <div class="text-base font-medium">Info barang</div>
@@ -79,7 +79,10 @@ import {
 import type { ProductCreateFormModel } from "@/types/product";
 
 const props = defineProps<{
-  model: Pick<ProductCreateFormModel, "nama_barang" | "deskripsi" | "kategori" | "file">;
+  model: Pick<
+    ProductCreateFormModel,
+    "nama_barang" | "deskripsi" | "kategori" | "file"
+  >;
 }>();
 
 const expandedNames = ref<string[]>([]);

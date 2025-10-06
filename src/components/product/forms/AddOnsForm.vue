@@ -18,7 +18,7 @@
       </n-form-item>
 
       <!-- Table of selected add-ons -->
-      <div class="mt-4" v-if="tableData.length">
+      <div class="mt-4" v-if="hasTableData">
         <n-data-table
           :columns="columns"
           :data="tableData"
@@ -26,7 +26,7 @@
           :bottom-bordered="false"
           :single-line="false"
           size="medium"
-          row-key="id"
+          :row-key="rowKey"
         />
       </div>
     </div>
@@ -67,13 +67,23 @@ function onAdd() {
     (item) => item.id === selectedValue.value
   );
   if (!exists) {
-    props.model.add_on.push({ id: selectedValue.value, is_active: true });
+    // reassign to ensure reactivity in some edge cases
+    props.model.add_on = [
+      ...props.model.add_on,
+      { id: selectedValue.value, is_active: true },
+    ];
     props.model.has_addon = true;
   }
   selectedValue.value = null;
 }
 
 const tableData = computed<AddOnItem[]>(() => props.model.add_on ?? []);
+const hasTableData = computed<boolean>(
+  () => (props.model.add_on ?? []).length > 0
+);
+
+// Provide row key as a function to satisfy NDataTable prop type
+const rowKey = (row: AddOnItem) => row.id as number;
 
 const columns = [
   {

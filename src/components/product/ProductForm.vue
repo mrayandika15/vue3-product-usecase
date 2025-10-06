@@ -1,6 +1,6 @@
 <template>
   <n-form ref="formRef" :model="model" :rules="rules" label-placement="top">
-    <div class="space-y-6">
+    <div class="space-y-2">
       <InfoForm :model="model" />
       <PriceForm :model="model" />
       <DetailForm :model="model" />

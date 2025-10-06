@@ -1,12 +1,13 @@
 import { createRouter, createWebHistory } from "vue-router";
 import type { RouteRecordRaw } from "vue-router";
 import ProductCreateView from "@/views/ProductCreateView.vue";
+import ProductListView from "@/views/ProductListView.vue";
 
 const routes: RouteRecordRaw[] = [
   {
     path: "/",
     name: "ProductList",
-    component: () => import("@/views/ProductListView.vue"),
+    component: ProductListView,
     meta: { useNaive: true },
   },
   {

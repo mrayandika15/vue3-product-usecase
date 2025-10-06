@@ -6,7 +6,6 @@
         <span class="text-lg font-semibold">Tambah Barang Baru</span>
       </div>
     </router-link>
-    >
 
     <ProductForm
       :model="model"

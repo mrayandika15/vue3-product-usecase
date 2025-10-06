@@ -42,6 +42,7 @@ import DataTable from "@/components/ui/DataTable.vue";
 import BaseButton from "@/components/ui/BaseButton.vue";
 import ProductFilters from "@/components/product/ProductFilters.vue";
 import { NCard } from "naive-ui";
+import router from "@/router";
 
 const productStore = useListProductStore();
 
@@ -54,7 +55,9 @@ onMounted(async () => {
   productStore.initialFetchProduct();
 });
 
-function handleAddProduct() {}
+function handleAddProduct() {
+  router.push({ name: "AddProduct" });
+}
 
 function handlePageChange(page: number) {
   productStore.setPage(page);
